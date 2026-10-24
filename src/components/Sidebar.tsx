@@ -114,11 +114,24 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
                 </div>
               </div>
               <button 
-                onClick={signOut} 
-                title="Sign Out" 
-                style={{ background: 'none', border: 'none', color: 'var(--accent-rose)', cursor: 'pointer', padding: '4px' }}
+                onClick={() => { signOut(); onClose(); }} 
+                title="Logout" 
+                style={{ 
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '4px',
+                  background: 'rgba(244, 63, 94, 0.1)', 
+                  border: '1px solid rgba(244, 63, 94, 0.25)', 
+                  color: 'var(--accent-rose)', 
+                  borderRadius: 'var(--radius-sm)',
+                  padding: '5px 8px',
+                  fontSize: '0.74rem',
+                  fontWeight: 700,
+                  cursor: 'pointer' 
+                }}
               >
-                <LogOut size={15} />
+                <LogOut size={13} />
+                <span>Logout</span>
               </button>
             </div>
           ) : (

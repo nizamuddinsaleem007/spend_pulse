@@ -8,7 +8,10 @@ import {
   Sun, 
   Moon, 
   Check, 
-  ShieldCheck 
+  ShieldCheck,
+  User,
+  LogOut,
+  LogIn
 } from 'lucide-react';
 import { useFinance } from '../context/FinanceContext';
 
@@ -21,7 +24,10 @@ export const SettingsView: React.FC = () => {
     exportDataJSON, 
     importDataJSON, 
     resetToSampleData,
-    openDeleteModal
+    openDeleteModal,
+    authUser,
+    signOut,
+    openAuthModal
   } = useFinance();
 
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -80,6 +86,87 @@ export const SettingsView: React.FC = () => {
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '20px' }}>
+        {/* Account & Security Card */}
+        <div className="glass-card" style={{ gridColumn: 'span 2' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '14px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+              <div 
+                style={{
+                  width: '46px',
+                  height: '46px',
+                  borderRadius: '50%',
+                  background: authUser 
+                    ? 'linear-gradient(135deg, var(--accent-emerald), var(--accent-cyan))' 
+                    : 'var(--bg-input)',
+                  color: authUser ? '#000' : 'var(--text-muted)',
+                  fontWeight: 800,
+                  fontSize: '1.15rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  border: '1px solid var(--border-subtle)',
+                  flexShrink: 0
+                }}
+              >
+                {authUser ? (authUser.username || authUser.email).charAt(0).toUpperCase() : <User size={22} />}
+              </div>
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <h4 style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--text-primary)' }}>
+                    {authUser ? `@${authUser.username || authUser.email.split('@')[0]}` : 'Guest Visitor'}
+                  </h4>
+                  {authUser ? (
+                    <span style={{ fontSize: '0.7rem', padding: '2px 8px', borderRadius: 'var(--radius-full)', background: 'rgba(16, 185, 129, 0.15)', color: 'var(--accent-emerald)', fontWeight: 700 }}>
+                      Vault Active • RLS Protected
+                    </span>
+                  ) : (
+                    <span style={{ fontSize: '0.7rem', padding: '2px 8px', borderRadius: 'var(--radius-full)', background: 'rgba(245, 158, 11, 0.15)', color: 'var(--accent-amber)', fontWeight: 700 }}>
+                      Read-Only Preview
+                    </span>
+                  )}
+                </div>
+                <p style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', marginTop: '3px' }}>
+                  {authUser 
+                    ? `Account Email: ${authUser.email} — Synchronized securely across all your devices.`
+                    : 'You are browsing demo numbers. Sign in to activate your private cloud vault.'}
+                </p>
+              </div>
+            </div>
+
+            {authUser ? (
+              <button
+                type="button"
+                onClick={signOut}
+                className="btn btn-secondary"
+                style={{ 
+                  color: 'var(--accent-rose)', 
+                  borderColor: 'rgba(244, 63, 94, 0.3)', 
+                  padding: '9px 16px',
+                  fontWeight: 700,
+                  fontSize: '0.86rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  cursor: 'pointer'
+                }}
+              >
+                <LogOut size={16} />
+                <span>Logout of Vault</span>
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={openAuthModal}
+                className="btn btn-primary"
+                style={{ padding: '9px 16px', fontSize: '0.86rem', display: 'flex', alignItems: 'center', gap: '6px' }}
+              >
+                <LogIn size={16} />
+                <span>Sign In / Register</span>
+              </button>
+            )}
+          </div>
+        </div>
+
         {/* Currency & Appearance */}
         <div className="glass-card">
           <h3 className="chart-title" style={{ marginBottom: '16px' }}>

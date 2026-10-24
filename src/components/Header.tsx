@@ -10,7 +10,8 @@ import {
   Check, 
   Sparkles,
   ShieldCheck,
-  Lock
+  Lock,
+  LogOut
 } from 'lucide-react';
 import { useFinance } from '../context/FinanceContext';
 
@@ -335,10 +336,21 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSidebar, onScrollToQuickAd
             <button 
               className="btn btn-secondary" 
               onClick={signOut}
-              title="Sign Out"
-              style={{ padding: '6px 10px', fontSize: '0.75rem' }}
+              title="Logout of your account"
+              style={{ 
+                padding: '6px 12px', 
+                fontSize: '0.78rem', 
+                fontWeight: 700,
+                color: 'var(--accent-rose)', 
+                borderColor: 'rgba(244, 63, 94, 0.3)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '5px',
+                cursor: 'pointer'
+              }}
             >
-              Sign Out
+              <LogOut size={13} />
+              <span>Logout</span>
             </button>
           </div>
         )}
