@@ -17,10 +17,11 @@ import { useFinance } from '../context/FinanceContext';
 
 interface HeaderProps {
   onOpenSidebar: () => void;
-  onScrollToQuickAdd: () => void;
+  onScrollToQuickAdd?: () => void;
+  onOpenQuickAdd?: () => void;
 }
 
-export const Header: React.FC<HeaderProps> = ({ onOpenSidebar, onScrollToQuickAdd }) => {
+export const Header: React.FC<HeaderProps> = ({ onOpenSidebar, onScrollToQuickAdd, onOpenQuickAdd }) => {
   const { 
     metrics, 
     activeTab, 
@@ -84,13 +85,13 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSidebar, onScrollToQuickAd
         >
           <Menu size={20} />
         </button>
-        <div>
-          <h2 style={{ fontSize: '1.15rem', fontWeight: 800, letterSpacing: '-0.02em', color: 'var(--text-primary)' }}>
+        <div style={{ minWidth: 0 }}>
+          <h2 className="desktop-only" style={{ fontSize: '1.15rem', fontWeight: 800, letterSpacing: '-0.02em', color: 'var(--text-primary)' }}>
             {getPageTitle()}
           </h2>
           
           {/* Custom Luxury Month Switcher Bar */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginTop: '4px', position: 'relative' }} ref={dropdownRef}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginTop: '0px', position: 'relative' }} ref={dropdownRef}>
             {/* Prev Chevron */}
             <button
               onClick={goToPrevMonth}
@@ -364,7 +365,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSidebar, onScrollToQuickAd
         {activeTab === 'dashboard' && (
           <button 
             className="btn btn-primary desktop-only" 
-            onClick={onScrollToQuickAdd}
+            onClick={onOpenQuickAdd || onScrollToQuickAdd}
             style={{ padding: '8px 14px', fontSize: '0.82rem' }}
           >
             <Plus size={16} />

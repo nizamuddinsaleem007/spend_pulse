@@ -14,11 +14,19 @@ import { AnalyticsView } from './components/AnalyticsView';
 import { SettingsView } from './components/SettingsView';
 import { MobileBottomNav } from './components/MobileBottomNav';
 import { AuthModal } from './components/AuthModal';
+import { QuickAddModal } from './components/QuickAddModal';
 import './styles/components.css';
 
 const AppContent: React.FC = () => {
   const { activeTab } = useFinance();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [isQuickAddModalOpen, setIsQuickAddModalOpen] = useState(false);
+  const [quickAddTab, setQuickAddTab] = useState<'expense' | 'income'>('expense');
+
+  const handleOpenQuickAdd = (tab: 'expense' | 'income' = 'expense') => {
+    setQuickAddTab(tab);
+    setIsQuickAddModalOpen(true);
+  };
 
   const handleScrollToQuickAdd = () => {
     const el = document.getElementById('quick-add-dock');
@@ -37,13 +45,14 @@ const AppContent: React.FC = () => {
         <Header 
           onOpenSidebar={() => setSidebarOpen(true)} 
           onScrollToQuickAdd={handleScrollToQuickAdd} 
+          onOpenQuickAdd={() => handleOpenQuickAdd('expense')}
         />
 
         <main className="content-container">
           {activeTab === 'dashboard' && (
             <>
-              {/* 1. Hero Financial Metrics */}
-              <MetricCards />
+              {/* 1. Hero Financial Metrics & Quick Actions */}
+              <MetricCards onOpenQuickAdd={handleOpenQuickAdd} />
 
               {/* 2. Visual Charts Deck */}
               <DashboardCharts />
@@ -63,9 +72,16 @@ const AppContent: React.FC = () => {
           {activeTab === 'settings' && <SettingsView />}
         </main>
 
-        {/* Mobile Bottom Navigation Bar */}
-        <MobileBottomNav onQuickAddClick={handleScrollToQuickAdd} />
+        {/* Mobile Bottom Navigation Bar with instant sheet open */}
+        <MobileBottomNav onQuickAddClick={() => handleOpenQuickAdd('expense')} />
       </div>
+
+      {/* Mobile-Friendly Quick Add Bottom Sheet Modal */}
+      <QuickAddModal 
+        isOpen={isQuickAddModalOpen} 
+        onClose={() => setIsQuickAddModalOpen(false)} 
+        initialTab={quickAddTab}
+      />
 
       {/* Authentication Modal */}
       <AuthModal />

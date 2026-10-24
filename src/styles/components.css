@@ -1,4 +1,57 @@
-/* Metric Cards Grid */
+/* Metric Cards & Section Layout */
+.metrics-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.metrics-section .hero-balance {
+  width: 100%;
+}
+
+.secondary-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+@media (max-width: 1024px) {
+  .secondary-metrics-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+}
+
+@media (max-width: 600px) {
+  .metrics-section {
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .secondary-metrics-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .compact-metric-card {
+    padding: 14px 12px !important;
+    border-radius: var(--radius-md) !important;
+  }
+
+  .compact-metric-card .metric-title {
+    font-size: 0.72rem !important;
+  }
+
+  .compact-metric-card .metric-value {
+    font-size: 1.35rem !important;
+  }
+
+  .compact-metric-card .metric-subtext {
+    font-size: 0.68rem !important;
+  }
+}
+
 .metrics-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));

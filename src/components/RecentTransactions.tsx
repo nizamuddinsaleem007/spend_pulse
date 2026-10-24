@@ -49,8 +49,16 @@ export const RecentTransactions: React.FC = () => {
           Recent Financial Activity
         </h3>
 
-        {/* Filter Pills */}
-        <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+        {/* Filter Pills with Horizontal Swipe */}
+        <div style={{ 
+          display: 'flex', 
+          gap: '6px', 
+          overflowX: 'auto', 
+          paddingBottom: '4px',
+          maxWidth: '100%',
+          scrollbarWidth: 'none',
+          WebkitOverflowScrolling: 'touch'
+        }}>
           {[
             { id: 'all', label: 'All' },
             { id: 'expense', label: 'Expenses' },
@@ -63,6 +71,7 @@ export const RecentTransactions: React.FC = () => {
               key={f.id}
               className={`subtype-pill ${filter === f.id ? 'selected' : ''}`}
               onClick={() => setFilter(f.id as any)}
+              style={{ whiteSpace: 'nowrap', flexShrink: 0 }}
             >
               {f.label}
             </button>
