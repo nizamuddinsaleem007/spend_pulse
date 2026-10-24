@@ -15,6 +15,7 @@ import { SettingsView } from './components/SettingsView';
 import { MobileBottomNav } from './components/MobileBottomNav';
 import { AuthModal } from './components/AuthModal';
 import { QuickAddModal } from './components/QuickAddModal';
+import { TutorialModal } from './components/TutorialModal';
 import './styles/components.css';
 
 const AppContent: React.FC = () => {
@@ -87,6 +88,9 @@ const AppContent: React.FC = () => {
 
       {/* Authentication Modal */}
       <AuthModal />
+
+      {/* Guest Tutorial Walkthrough Modal */}
+      <TutorialModal />
     </div>
   );
 };

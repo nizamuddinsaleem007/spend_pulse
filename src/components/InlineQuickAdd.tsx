@@ -67,12 +67,12 @@ export const InlineQuickAdd: React.FC<InlineQuickAddProps> = ({ id }) => {
     e.preventDefault();
     const amountNum = parseFloat(expenseAmount);
     if (!amountNum || amountNum <= 0) return;
-    if (!expenseTitle.trim()) return;
 
     const chosenCat = categories.find(c => c.id === selectedCategoryId) || categories[0];
+    const finalTitle = expenseTitle.trim() || chosenCat.name || 'Expense';
 
     const added = addExpense({
-      title: expenseTitle.trim(),
+      title: finalTitle,
       amount: amountNum,
       categoryId: chosenCat.id,
       paymentMode,
@@ -91,7 +91,7 @@ export const InlineQuickAdd: React.FC<InlineQuickAddProps> = ({ id }) => {
       });
       showToast(`🎉 Saved ${currency}${amountNum.toLocaleString()} under ${chosenCat.name}!`);
     } else {
-      showToast(`Logged ${expenseTitle} (${currency}${amountNum.toLocaleString()})`);
+      showToast(`Logged ${finalTitle} (${currency}${amountNum.toLocaleString()})`);
     }
 
     // Reset
@@ -152,7 +152,7 @@ export const InlineQuickAdd: React.FC<InlineQuickAddProps> = ({ id }) => {
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
         <div>
           <h3 style={{ fontSize: '1.15rem', fontWeight: 800, letterSpacing: '-0.01em', color: 'var(--text-primary)' }}>
-            Quick Entry Dock
+            Quick Entry
           </h3>
           <p style={{ fontSize: '0.78rem', color: 'var(--text-secondary)' }}>
             Log in seconds to stop salary disappearing untracked.
@@ -211,26 +211,29 @@ export const InlineQuickAdd: React.FC<InlineQuickAddProps> = ({ id }) => {
                 <input
                   type="number"
                   step="any"
+                  inputMode="decimal"
                   placeholder="0.00"
                   className="form-input mono-num"
                   style={{ paddingLeft: '34px', fontSize: '1.15rem', fontWeight: 700 }}
                   value={expenseAmount}
                   onChange={(e) => setExpenseAmount(e.target.value)}
+                  onWheel={(e) => e.currentTarget.blur()}
                   required
                 />
               </div>
             </div>
 
-            {/* Title */}
+            {/* Title (Optional) */}
             <div className="form-group" style={{ marginBottom: 0 }}>
-              <label className="form-label">Expense Name / Title</label>
+              <label className="form-label">
+                Expense Name / Title <span style={{ color: 'var(--text-muted)', fontWeight: 400, fontSize: '0.74rem' }}>(Optional)</span>
+              </label>
               <input
                 type="text"
-                placeholder="e.g. Swiggy lunch, KSEB Bill, Kuri"
+                placeholder="Optional (e.g. Swiggy lunch, Milk)"
                 className="form-input"
                 value={expenseTitle}
                 onChange={(e) => setExpenseTitle(e.target.value)}
-                required
               />
             </div>
           </div>
@@ -373,11 +376,13 @@ export const InlineQuickAdd: React.FC<InlineQuickAddProps> = ({ id }) => {
                 <input
                   type="number"
                   step="any"
+                  inputMode="decimal"
                   placeholder="0.00"
                   className="form-input mono-num"
                   style={{ paddingLeft: '34px', fontSize: '1.15rem', fontWeight: 700 }}
                   value={incomeAmount}
                   onChange={(e) => setIncomeAmount(e.target.value)}
+                  onWheel={(e) => e.currentTarget.blur()}
                   required
                 />
               </div>

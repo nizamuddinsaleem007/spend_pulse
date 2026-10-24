@@ -602,6 +602,18 @@ body {
   box-shadow: 0 0 0 3px var(--border-focus);
 }
 
+/* Remove number input spin arrows / scroll steppers */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
 /* Numbers font */
 .mono-num {
   font-family: var(--font-mono);

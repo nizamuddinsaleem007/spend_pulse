@@ -97,12 +97,12 @@ export const QuickAddModal: React.FC<QuickAddModalProps> = ({
 
     const amountNum = parseFloat(expenseAmount);
     if (!amountNum || amountNum <= 0) return;
-    if (!expenseTitle.trim()) return;
 
     const chosenCat = categories.find(c => c.id === selectedCategoryId) || categories[0];
+    const finalTitle = expenseTitle.trim() || chosenCat.name || 'Expense';
 
     const added = addExpense({
-      title: expenseTitle.trim(),
+      title: finalTitle,
       amount: amountNum,
       categoryId: chosenCat.id,
       paymentMode,
@@ -320,70 +320,26 @@ export const QuickAddModal: React.FC<QuickAddModalProps> = ({
                   }}
                   value={expenseAmount}
                   onChange={(e) => setExpenseAmount(e.target.value)}
+                  onWheel={(e) => e.currentTarget.blur()}
+                  inputMode="decimal"
                   autoFocus
                   required
                 />
               </div>
-
-              {/* Quick 1-Tap Amount Chips for Mobile Fast Entry */}
-              <div style={{ display: 'flex', gap: '6px', overflowX: 'auto', marginTop: '8px', scrollbarWidth: 'none', WebkitOverflowScrolling: 'touch' }}>
-                {[50, 100, 200, 500, 1000, 2000].map(val => (
-                  <button
-                    key={val}
-                    type="button"
-                    onClick={() => {
-                      const cur = parseFloat(expenseAmount) || 0;
-                      setExpenseAmount((cur + val).toString());
-                    }}
-                    style={{
-                      background: 'rgba(244, 63, 94, 0.1)',
-                      border: '1px solid rgba(244, 63, 94, 0.25)',
-                      color: 'var(--accent-rose)',
-                      fontSize: '0.74rem',
-                      fontWeight: 700,
-                      padding: '4px 10px',
-                      borderRadius: 'var(--radius-full)',
-                      cursor: 'pointer',
-                      whiteSpace: 'nowrap',
-                      flexShrink: 0
-                    }}
-                  >
-                    +{currency}{val}
-                  </button>
-                ))}
-                {expenseAmount && (
-                  <button
-                    type="button"
-                    onClick={() => setExpenseAmount('')}
-                    style={{
-                      background: 'rgba(255, 255, 255, 0.05)',
-                      border: '1px solid rgba(255, 255, 255, 0.1)',
-                      color: 'var(--text-muted)',
-                      fontSize: '0.72rem',
-                      padding: '4px 8px',
-                      borderRadius: 'var(--radius-full)',
-                      cursor: 'pointer',
-                      whiteSpace: 'nowrap',
-                      flexShrink: 0
-                    }}
-                  >
-                    Clear
-                  </button>
-                )}
-              </div>
             </div>
 
-            {/* Title / Merchant Name */}
+            {/* Title / Merchant Name (Optional) */}
             <div className="form-group" style={{ marginBottom: 0 }}>
-              <label className="form-label" style={{ fontSize: '0.78rem' }}>Expense Title / Merchant</label>
+              <label className="form-label" style={{ fontSize: '0.78rem' }}>
+                Expense Title / Merchant <span style={{ color: 'var(--text-muted)', fontWeight: 400 }}>(Optional)</span>
+              </label>
               <input
                 type="text"
-                placeholder="e.g. Swiggy Lunch, Metro, Gym"
+                placeholder="Optional (e.g. Swiggy Lunch, Metro)"
                 className="form-input"
                 style={{ height: '46px', fontSize: '0.95rem' }}
                 value={expenseTitle}
                 onChange={(e) => setExpenseTitle(e.target.value)}
-                required
               />
               {/* Quick suggestion tags */}
               <div style={{ display: 'flex', gap: '6px', overflowX: 'auto', marginTop: '6px', paddingBottom: '2px' }}>
@@ -621,56 +577,11 @@ export const QuickAddModal: React.FC<QuickAddModalProps> = ({
                   }}
                   value={incomeAmount}
                   onChange={(e) => setIncomeAmount(e.target.value)}
+                  onWheel={(e) => e.currentTarget.blur()}
+                  inputMode="decimal"
                   autoFocus
                   required
                 />
-              </div>
-
-              {/* Quick 1-Tap Income Presets */}
-              <div style={{ display: 'flex', gap: '6px', overflowX: 'auto', marginTop: '8px', scrollbarWidth: 'none', WebkitOverflowScrolling: 'touch' }}>
-                {[1000, 5000, 10000, 25000, 50000].map(val => (
-                  <button
-                    key={val}
-                    type="button"
-                    onClick={() => {
-                      const cur = parseFloat(incomeAmount) || 0;
-                      setIncomeAmount((cur + val).toString());
-                    }}
-                    style={{
-                      background: 'rgba(16, 185, 129, 0.1)',
-                      border: '1px solid rgba(16, 185, 129, 0.25)',
-                      color: 'var(--accent-emerald)',
-                      fontSize: '0.74rem',
-                      fontWeight: 700,
-                      padding: '4px 10px',
-                      borderRadius: 'var(--radius-full)',
-                      cursor: 'pointer',
-                      whiteSpace: 'nowrap',
-                      flexShrink: 0
-                    }}
-                  >
-                    +{currency}{val.toLocaleString()}
-                  </button>
-                ))}
-                {incomeAmount && (
-                  <button
-                    type="button"
-                    onClick={() => setIncomeAmount('')}
-                    style={{
-                      background: 'rgba(255, 255, 255, 0.05)',
-                      border: '1px solid rgba(255, 255, 255, 0.1)',
-                      color: 'var(--text-muted)',
-                      fontSize: '0.72rem',
-                      padding: '4px 8px',
-                      borderRadius: 'var(--radius-full)',
-                      cursor: 'pointer',
-                      whiteSpace: 'nowrap',
-                      flexShrink: 0
-                    }}
-                  >
-                    Clear
-                  </button>
-                )}
               </div>
             </div>
 

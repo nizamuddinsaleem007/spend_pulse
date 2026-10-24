@@ -39,7 +39,8 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSidebar, onScrollToQuickAd
     openAuthModal,
     signOut,
     theme,
-    toggleTheme
+    toggleTheme,
+    openTutorialModal
   } = useFinance();
 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -341,16 +342,27 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSidebar, onScrollToQuickAd
           )}
         </button>
 
-        {/* 4. Logout / Sign In button (Desktop) */}
+        {/* 4. Tour & Auth buttons (Desktop) */}
         {!authUser ? (
-          <button 
-            className="btn btn-secondary desktop-only" 
-            onClick={openAuthModal}
-            style={{ padding: '6px 12px', fontSize: '0.8rem', gap: '5px' }}
-          >
-            <Lock size={13} color="var(--accent-emerald)" />
-            <span>Sign In</span>
-          </button>
+          <div className="desktop-only" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <button 
+              className="btn btn-secondary" 
+              onClick={openTutorialModal}
+              title="Watch quick app tutorial tour"
+              style={{ padding: '6px 12px', fontSize: '0.8rem', gap: '5px' }}
+            >
+              <Sparkles size={13} color="var(--accent-cyan)" />
+              <span>Tour</span>
+            </button>
+            <button 
+              className="btn btn-secondary" 
+              onClick={openAuthModal}
+              style={{ padding: '6px 12px', fontSize: '0.8rem', gap: '5px' }}
+            >
+              <Lock size={13} color="var(--accent-emerald)" />
+              <span>Sign In</span>
+            </button>
+          </div>
         ) : (
           <button 
             className="btn btn-secondary desktop-only" 
@@ -483,28 +495,50 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSidebar, onScrollToQuickAd
                 <span>Quick Add</span>
               </button>
 
-              {/* 4. Logout / Sign In Button */}
+              {/* 4. Logout / Sign In / Tour Button */}
               {!authUser ? (
-                <button
-                  type="button"
-                  className="btn btn-secondary"
-                  onClick={() => {
-                    openAuthModal();
-                    setIsMobileMenuOpen(false);
-                  }}
-                  style={{
-                    width: '100%',
-                    padding: '8px 12px',
-                    fontSize: '0.8rem',
-                    justifyContent: 'center',
-                    gap: '6px',
-                    color: 'var(--accent-emerald)',
-                    borderColor: 'rgba(16, 185, 129, 0.3)'
-                  }}
-                >
-                  <Lock size={13} />
-                  <span>Sign In</span>
-                </button>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    onClick={() => {
+                      openTutorialModal();
+                      setIsMobileMenuOpen(false);
+                    }}
+                    style={{
+                      width: '100%',
+                      padding: '8px 12px',
+                      fontSize: '0.8rem',
+                      justifyContent: 'center',
+                      gap: '6px',
+                      color: 'var(--accent-cyan)',
+                      borderColor: 'rgba(6, 182, 212, 0.3)'
+                    }}
+                  >
+                    <Sparkles size={13} />
+                    <span>Quick App Tour</span>
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    onClick={() => {
+                      openAuthModal();
+                      setIsMobileMenuOpen(false);
+                    }}
+                    style={{
+                      width: '100%',
+                      padding: '8px 12px',
+                      fontSize: '0.8rem',
+                      justifyContent: 'center',
+                      gap: '6px',
+                      color: 'var(--accent-emerald)',
+                      borderColor: 'rgba(16, 185, 129, 0.3)'
+                    }}
+                  >
+                    <Lock size={13} />
+                    <span>Sign In</span>
+                  </button>
+                </div>
               ) : (
                 <button
                   type="button"

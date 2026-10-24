@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Mail, Lock, User, ShieldCheck, X, Sparkles, CheckCircle2, ArrowRight } from 'lucide-react';
+import { Mail, Lock, User, X, CheckCircle2, ArrowRight } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { useFinance } from '../context/FinanceContext';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
@@ -94,8 +94,8 @@ export const AuthModal: React.FC = () => {
       } else {
         // Local simulation if keys not yet configured in .env
         setTimeout(() => {
-          const localUsername = mode === 'signup' 
-            ? username.trim() 
+          const localUsername = mode === 'signup'
+            ? username.trim()
             : (email ? email.trim().split('@')[0] : 'user');
 
           const mockUser = {
@@ -121,48 +121,22 @@ export const AuthModal: React.FC = () => {
     }
   };
 
-  const handleMagicLink = async () => {
-    if (!email.trim()) {
-      setErrorMessage('Please enter your email address first.');
-      return;
-    }
-    setLoading(true);
-    setErrorMessage(null);
-
-    try {
-      if (isSupabaseConfigured) {
-        const { error } = await supabase.auth.signInWithOtp({ email: email.trim() });
-        if (error) throw error;
-        setSuccessMessage('Magic Link sent! Click the link in your email to instantly log in.');
-      } else {
-        setSuccessMessage(`Simulated Magic Link sent to ${email.trim()}!`);
-      }
-    } catch (err: any) {
-      setErrorMessage(err.message || 'Could not send Magic Link.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
   return (
     <div className="modal-overlay" onClick={closeAuthModal}>
-      <div 
-        className="modal-content" 
+      <div
+        className="modal-content"
         onClick={(e) => e.stopPropagation()}
         style={{ maxWidth: '440px', padding: '28px' }}
       >
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '18px' }}>
           <div>
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '3px 10px', borderRadius: 'var(--radius-full)', background: 'rgba(16, 185, 129, 0.15)', border: '1px solid rgba(16, 185, 129, 0.3)', color: 'var(--accent-emerald)', fontSize: '0.72rem', fontWeight: 800, textTransform: 'uppercase', marginBottom: '8px' }}>
-              <ShieldCheck size={13} />
-              Row-Level Security (RLS) Protected
-            </div>
+
             <h3 style={{ fontSize: '1.35rem', fontWeight: 800, color: 'var(--text-primary)' }}>
               {mode === 'signin' ? 'Sign In to Your Vault' : 'Create Private Vault'}
             </h3>
             <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '4px' }}>
-              {mode === 'signin' 
-                ? 'Sign in to access your personal expenses and sync live across devices.' 
+              {mode === 'signin'
+                ? 'Sign in to access your personal expenses and sync live across devices.'
                 : 'Create your private account. Only you will ever be able to access your data.'}
             </p>
           </div>
@@ -233,7 +207,7 @@ export const AuthModal: React.FC = () => {
                 <User size={16} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
                 <input
                   type="text"
-                  placeholder="e.g. nizam"
+                  placeholder="e.g. John Doe"
                   className="form-input"
                   style={{ paddingLeft: '38px' }}
                   value={username}
@@ -251,7 +225,7 @@ export const AuthModal: React.FC = () => {
               <Mail size={16} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
               <input
                 type="email"
-                placeholder="you@example.com"
+                placeholder="johndoe@example.com"
                 className="form-input"
                 style={{ paddingLeft: '38px' }}
                 value={email}
@@ -316,24 +290,12 @@ export const AuthModal: React.FC = () => {
             {!loading && <ArrowRight size={16} />}
           </button>
 
-          <div style={{ textAlign: 'center', margin: '14px 0 6px', fontSize: '0.78rem', color: 'var(--text-muted)' }}>
-            or passwordless sign in:
-          </div>
 
-          <button
-            type="button"
-            onClick={handleMagicLink}
-            disabled={loading}
-            className="btn btn-secondary"
-            style={{ width: '100%', padding: '10px', fontSize: '0.82rem' }}
-          >
-            <Sparkles size={14} color="var(--accent-cyan)" />
-            Send Magic Link to Email
-          </button>
+
         </form>
 
         <div style={{ marginTop: '18px', paddingTop: '14px', borderTop: '1px solid var(--border-subtle)', textAlign: 'center', fontSize: '0.72rem', color: 'var(--text-muted)' }}>
-          🔒 Unauthenticated users can only view demo statistics. Logging in grants write access to your personal cloud vault.
+          🔒 Unauthenticated users can only view demo statistics. Logging in grants write access to your personal vault.
         </div>
       </div>
     </div>

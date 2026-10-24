@@ -45,6 +45,9 @@ interface FinanceContextType {
   isAuthModalOpen: boolean;
   openAuthModal: () => void;
   closeAuthModal: () => void;
+  isTutorialModalOpen: boolean;
+  openTutorialModal: () => void;
+  closeTutorialModal: () => void;
   setAuthUser: (user: AuthUser | null) => void;
   signOut: () => void;
   openDeleteModal: (options: Omit<DeleteModalData, 'isOpen'>) => void;
@@ -269,9 +272,12 @@ export const FinanceProvider: React.FC<{ children: React.ReactNode }> = ({ child
     return null;
   });
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
-
   const openAuthModal = () => setIsAuthModalOpen(true);
   const closeAuthModal = () => setIsAuthModalOpen(false);
+
+  const [isTutorialModalOpen, setIsTutorialModalOpen] = useState(false);
+  const openTutorialModal = () => setIsTutorialModalOpen(true);
+  const closeTutorialModal = () => setIsTutorialModalOpen(false);
 
   // Global Delete Confirm Modal State
   const [deleteModalData, setDeleteModalData] = useState<DeleteModalData>({
@@ -1030,6 +1036,9 @@ export const FinanceProvider: React.FC<{ children: React.ReactNode }> = ({ child
         isAuthModalOpen,
         openAuthModal,
         closeAuthModal,
+        isTutorialModalOpen,
+        openTutorialModal,
+        closeTutorialModal,
         setAuthUser,
         signOut,
         openDeleteModal,
