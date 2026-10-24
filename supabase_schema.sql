@@ -136,3 +136,27 @@ create policy "Users can update own incomes"
 create policy "Users can delete own incomes"
   on public.incomes for delete
   using (auth.uid() = user_id);
+
+-- -------------------------------------------------------------
+-- Auto-Confirm All Users (Eliminate "Email not confirmed")
+-- -------------------------------------------------------------
+-- 1. Auto-confirm any currently registered user
+update auth.users
+set email_confirmed_at = now()
+where email_confirmed_at is null;
+
+-- 2. Trigger so all future users are automatically confirmed at moment of signup
+create or replace function public.auto_confirm_user()
+returns trigger as $$
+begin
+  new.email_confirmed_at = now();
+  return new;
+end;
+$$ language plpgsql security definer;
+
+drop trigger if exists on_auth_user_created on auth.users;
+create trigger on_auth_user_created
+  before insert on auth.users
+  for each row
+  execute function public.auto_confirm_user();
+
