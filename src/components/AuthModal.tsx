@@ -80,7 +80,7 @@ export const AuthModal: React.FC = () => {
           });
           if (error) throw error;
           if (data.user) {
-            const resolvedUsername = data.user.user_metadata?.username || email.trim().split('@')[0];
+            const resolvedUsername = data.user.user_metadata?.username || (email ? email.trim().split('@')[0] : 'user');
             setAuthUser({
               id: data.user.id,
               email: data.user.email || email.trim(),
@@ -96,7 +96,7 @@ export const AuthModal: React.FC = () => {
         setTimeout(() => {
           const localUsername = mode === 'signup' 
             ? username.trim() 
-            : email.trim().split('@')[0];
+            : (email ? email.trim().split('@')[0] : 'user');
 
           const mockUser = {
             id: 'usr_' + Date.now(),

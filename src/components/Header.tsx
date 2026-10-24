@@ -302,7 +302,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSidebar, onScrollToQuickAd
         ) : (
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <div 
-              title={`Logged in as @${authUser.username || authUser.email.split('@')[0]} (${authUser.email})`}
+              title={`Logged in as @${authUser.username || (authUser.email ? authUser.email.split('@')[0] : 'user')} (${authUser.email || ''})`}
               style={{
                 display: 'flex',
                 alignItems: 'center',
@@ -327,10 +327,10 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSidebar, onScrollToQuickAd
                   justifyContent: 'center'
                 }}
               >
-                {(authUser.username || authUser.email).charAt(0).toUpperCase()}
+                {(authUser.username || authUser.email || 'U').charAt(0).toUpperCase()}
               </div>
               <span style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-primary)' }}>
-                @{authUser.username || authUser.email.split('@')[0]}
+                @{authUser.username || (authUser.email ? authUser.email.split('@')[0] : 'user')}
               </span>
             </div>
             <button 

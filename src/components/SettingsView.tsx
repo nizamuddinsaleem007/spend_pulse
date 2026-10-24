@@ -108,12 +108,12 @@ export const SettingsView: React.FC = () => {
                   flexShrink: 0
                 }}
               >
-                {authUser ? (authUser.username || authUser.email).charAt(0).toUpperCase() : <User size={22} />}
+                {authUser ? (authUser.username || authUser.email || 'U').charAt(0).toUpperCase() : <User size={22} />}
               </div>
               <div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <h4 style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--text-primary)' }}>
-                    {authUser ? `@${authUser.username || authUser.email.split('@')[0]}` : 'Guest Visitor'}
+                    {authUser ? `@${authUser.username || (authUser.email ? authUser.email.split('@')[0] : 'user')}` : 'Guest Visitor'}
                   </h4>
                   {authUser ? (
                     <span style={{ fontSize: '0.7rem', padding: '2px 8px', borderRadius: 'var(--radius-full)', background: 'rgba(16, 185, 129, 0.15)', color: 'var(--accent-emerald)', fontWeight: 700 }}>

@@ -201,7 +201,7 @@ export const InlineQuickAdd: React.FC<InlineQuickAddProps> = ({ id }) => {
           color: 'var(--accent-emerald)'
         }}>
           <Sparkles size={14} />
-          <span>Private Vault Active for <strong>@{authUser.username || authUser.email.split('@')[0]}</strong> — multi-device synced with Row-Level Security.</span>
+          <span>Private Vault Active for <strong>@{authUser.username || (authUser.email ? authUser.email.split('@')[0] : 'user')}</strong> — multi-device synced with Row-Level Security.</span>
         </div>
       )}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>

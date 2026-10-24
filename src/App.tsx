@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { FinanceProvider, useFinance } from './context/FinanceContext';
+import { ErrorBoundary } from './components/ErrorBoundary';
 import { Sidebar } from './components/Sidebar';
 import { Header } from './components/Header';
 import { MetricCards } from './components/MetricCards';
@@ -74,9 +75,11 @@ const AppContent: React.FC = () => {
 
 export const App: React.FC = () => {
   return (
-    <FinanceProvider>
-      <AppContent />
-    </FinanceProvider>
+    <ErrorBoundary>
+      <FinanceProvider>
+        <AppContent />
+      </FinanceProvider>
+    </ErrorBoundary>
   );
 };
 

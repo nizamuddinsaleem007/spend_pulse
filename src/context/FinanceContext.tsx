@@ -254,10 +254,13 @@ export const FinanceProvider: React.FC<{ children: React.ReactNode }> = ({ child
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
+        if (!parsed || typeof parsed !== 'object') return null;
+        const email = parsed.email || '';
+        const username = parsed.username || (email ? email.split('@')[0] : 'User');
         return {
-          id: parsed.id,
-          email: parsed.email,
-          username: parsed.username || parsed.email.split('@')[0] || 'User'
+          id: parsed.id || 'usr_local',
+          email,
+          username
         };
       } catch {
         return null;
