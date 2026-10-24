@@ -34,6 +34,15 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
     { id: 'settings', label: 'Settings', icon: <Settings size={20} /> }
   ];
 
+  // Close on Escape key
+  React.useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isOpen) onClose();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
+
   const handleNavClick = (tabId: ActiveTab) => {
     setActiveTab(tabId);
     onClose();
@@ -55,11 +64,12 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
             <span>Smart Budget PWA</span>
           </div>
           <button 
-            className="menu-toggle-btn" 
+            className="sidebar-close-btn" 
             onClick={onClose}
             aria-label="Close menu"
+            title="Close navigation menu"
           >
-            <X size={18} />
+            <X size={20} />
           </button>
         </div>
 
@@ -144,6 +154,25 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
               <span>Sign In / Create Vault</span>
             </button>
           )}
+
+          <button 
+            className="btn btn-secondary" 
+            onClick={onClose}
+            style={{ 
+              width: '100%', 
+              padding: '10px 14px', 
+              fontSize: '0.82rem', 
+              fontWeight: 700, 
+              gap: '8px', 
+              justifyContent: 'center',
+              background: 'rgba(255, 255, 255, 0.04)',
+              border: '1px solid var(--border-subtle)',
+              color: 'var(--text-primary)'
+            }}
+          >
+            <X size={15} color="var(--accent-emerald)" />
+            <span>Close Sidebar & View Full Dashboard</span>
+          </button>
 
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>Theme</span>
