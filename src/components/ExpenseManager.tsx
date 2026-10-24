@@ -50,9 +50,7 @@ export const ExpenseManager: React.FC = () => {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '12px' }}>
         <div>
           <h2 style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--text-primary)' }}>Expense Manager</h2>
-          <p style={{ fontSize: '0.84rem', color: 'var(--text-secondary)' }}>
-            Filter, search, and audit all expenditures by category and payment channel.
-          </p>
+
         </div>
         <button className="btn btn-secondary" onClick={exportCSV}>
           <Download size={16} /> Export CSV
@@ -129,11 +127,11 @@ export const ExpenseManager: React.FC = () => {
               return (
                 <div key={exp.id} className="tx-item">
                   <div className="tx-left">
-                    <div 
+                    <div
                       className="tx-icon-box"
-                      style={{ 
-                        backgroundColor: `${cat?.color || '#f43f5e'}20`, 
-                        color: cat?.color || '#f43f5e' 
+                      style={{
+                        backgroundColor: `${cat?.color || '#f43f5e'}20`,
+                        color: cat?.color || '#f43f5e'
                       }}
                     >
                       {exp.paymentMode === 'Online' ? <CreditCard size={20} /> : <Banknote size={20} />}

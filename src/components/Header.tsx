@@ -11,7 +11,10 @@ import {
   Sparkles,
   ShieldCheck,
   Lock,
-  LogOut
+  LogOut,
+  Sun,
+  Moon,
+  MoreVertical
 } from 'lucide-react';
 import { useFinance } from '../context/FinanceContext';
 
@@ -34,17 +37,25 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSidebar, onScrollToQuickAd
     joinMonth,
     authUser,
     openAuthModal,
-    signOut
+    signOut,
+    theme,
+    toggleTheme
   } = useFinance();
 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // Close dropdown on outside click
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const mobileMenuRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdowns on outside click
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setIsDropdownOpen(false);
+      }
+      if (mobileMenuRef.current && !mobileMenuRef.current.contains(event.target as Node)) {
+        setIsMobileMenuOpen(false);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
@@ -85,191 +96,192 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSidebar, onScrollToQuickAd
         >
           <Menu size={20} />
         </button>
-        <div style={{ minWidth: 0 }}>
-          <h2 className="desktop-only" style={{ fontSize: '1.15rem', fontWeight: 800, letterSpacing: '-0.02em', color: 'var(--text-primary)' }}>
-            {getPageTitle()}
-          </h2>
-          
-          {/* Custom Luxury Month Switcher Bar */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginTop: '0px', position: 'relative' }} ref={dropdownRef}>
-            {/* Prev Chevron */}
-            <button
-              onClick={goToPrevMonth}
-              disabled={!canGoPrev}
-              title={canGoPrev ? "Previous Month" : `Earliest available is your joining month (${joinMonth})`}
-              style={{
-                background: 'var(--bg-input)',
-                border: '1px solid var(--border-subtle)',
-                color: canGoPrev ? 'var(--text-primary)' : 'var(--text-muted)',
-                opacity: canGoPrev ? 1 : 0.4,
-                cursor: canGoPrev ? 'pointer' : 'not-allowed',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '28px',
-                height: '28px',
-                borderRadius: 'var(--radius-sm)',
-                transition: 'all 0.2s ease'
-              }}
-            >
-              <ChevronLeft size={16} />
-            </button>
+        <h2 className="desktop-only" style={{ fontSize: '1.15rem', fontWeight: 800, letterSpacing: '-0.02em', color: 'var(--text-primary)', margin: 0, whiteSpace: 'nowrap' }}>
+          {getPageTitle()}
+        </h2>
+      </div>
 
-            {/* Custom Month Pill Button */}
-            <button
-              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-              style={{
-                background: 'var(--bg-input)',
-                border: isDropdownOpen ? '1px solid var(--accent-emerald)' : '1px solid var(--border-subtle)',
-                color: 'var(--text-primary)',
-                fontWeight: 700,
-                fontSize: '0.82rem',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                padding: '5px 12px',
-                borderRadius: 'var(--radius-sm)',
-                transition: 'all 0.2s ease',
-                boxShadow: isDropdownOpen ? '0 0 14px rgba(16, 185, 129, 0.2)' : 'none'
-              }}
-            >
-              <Calendar size={14} color="var(--accent-emerald)" />
-              <span className="desktop-only">{formattedMonth}</span>
-              <span className="mobile-only">{dateObj.toLocaleString('default', { month: 'short', year: '2-digit' })}</span>
-              {isCurrentMonth && (
-                <span style={{ fontSize: '0.68rem', background: 'rgba(16, 185, 129, 0.15)', color: 'var(--accent-emerald)', padding: '1px 6px', borderRadius: '4px' }}>
-                  Current
-                </span>
-              )}
-              <ChevronDown 
-                size={14} 
-                style={{ 
-                  color: 'var(--text-muted)', 
-                  transform: isDropdownOpen ? 'rotate(180deg)' : 'none',
-                  transition: 'transform 0.2s ease'
-                }} 
-              />
-            </button>
+      {/* Center: Month Selector & Navigation */}
+      <div className="header-center">
+        <div style={{ display: 'flex', alignItems: 'center', gap: '4px', position: 'relative' }} ref={dropdownRef}>
+          {/* Prev Chevron */}
+          <button
+            onClick={goToPrevMonth}
+            disabled={!canGoPrev}
+            title={canGoPrev ? "Previous Month" : `Earliest available is your joining month (${joinMonth})`}
+            style={{
+              background: 'var(--bg-input)',
+              border: '1px solid var(--border-subtle)',
+              color: canGoPrev ? 'var(--text-primary)' : 'var(--text-muted)',
+              opacity: canGoPrev ? 1 : 0.4,
+              cursor: canGoPrev ? 'pointer' : 'not-allowed',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: '28px',
+              height: '28px',
+              borderRadius: 'var(--radius-sm)',
+              transition: 'all 0.2s ease'
+            }}
+          >
+            <ChevronLeft size={16} />
+          </button>
 
-            {/* Next Chevron */}
-            <button
-              onClick={goToNextMonth}
-              title="Next Month (Future Planning)"
-              style={{
-                background: 'var(--bg-input)',
-                border: '1px solid var(--border-subtle)',
-                color: 'var(--text-primary)',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '28px',
-                height: '28px',
-                borderRadius: 'var(--radius-sm)',
-                transition: 'all 0.2s ease'
-              }}
-            >
-              <ChevronRight size={16} />
-            </button>
-
-            {/* Custom Glassmorphic Dropdown Menu */}
-            {isDropdownOpen && (
-              <div 
-                style={{
-                  position: 'absolute',
-                  top: '100%',
-                  left: 0,
-                  marginTop: '8px',
-                  width: '280px',
-                  maxWidth: 'calc(100vw - 28px)',
-                  background: 'var(--bg-surface-elevated)',
-                  border: '1px solid var(--border-highlight)',
-                  borderRadius: 'var(--radius-md)',
-                  boxShadow: '0 15px 35px rgba(0, 0, 0, 0.7), 0 0 0 1px var(--border-subtle)',
-                  padding: '8px',
-                  zIndex: 200,
-                  backdropFilter: 'blur(20px)',
-                  maxHeight: '340px',
-                  overflowY: 'auto'
-                }}
-              >
-                <div style={{ padding: '6px 10px', fontSize: '0.72rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 800, letterSpacing: '0.05em', borderBottom: '1px solid var(--border-subtle)', marginBottom: '6px' }}>
-                  Select Tracking Month
-                </div>
-
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
-                  {availableMonths.map((m) => {
-                    const isSelected = m.value === selectedMonth;
-                    return (
-                      <button
-                        key={m.value}
-                        onClick={() => {
-                          setSelectedMonth(m.value);
-                          setIsDropdownOpen(false);
-                        }}
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'space-between',
-                          padding: '10px 12px',
-                          borderRadius: 'var(--radius-sm)',
-                          border: isSelected ? '1px solid rgba(16, 185, 129, 0.35)' : '1px solid transparent',
-                          background: isSelected ? 'rgba(16, 185, 129, 0.12)' : 'transparent',
-                          color: isSelected ? '#ffffff' : 'var(--text-primary)',
-                          cursor: 'pointer',
-                          transition: 'all 0.15s ease',
-                          textAlign: 'left',
-                          fontFamily: 'inherit'
-                        }}
-                      >
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                          <span style={{ fontSize: '0.86rem', fontWeight: isSelected ? 800 : 600 }}>
-                            {m.label}
-                          </span>
-                          <span style={{ 
-                            fontSize: '0.68rem', 
-                            color: m.isCurrent 
-                              ? 'var(--accent-emerald)' 
-                              : m.isJoined 
-                              ? 'var(--accent-cyan)' 
-                              : 'var(--text-muted)' 
-                          }}>
-                            {m.badge}
-                          </span>
-                        </div>
-
-                        {isSelected ? (
-                          <Check size={16} color="var(--accent-emerald)" />
-                        ) : m.isFuture ? (
-                          <Sparkles size={14} color="var(--accent-purple)" />
-                        ) : null}
-                      </button>
-                    );
-                  })}
-                </div>
-
-                <div style={{ borderTop: '1px solid var(--border-subtle)', marginTop: '8px', paddingTop: '8px', paddingLeft: '8px', paddingRight: '8px', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.68rem', color: 'var(--text-muted)' }}>
-                  <ShieldCheck size={12} color="var(--accent-emerald)" />
-                  <span>Tracking active from join month ({joinMonth})</span>
-                </div>
-              </div>
+          {/* Custom Month Pill Button */}
+          <button
+            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+            style={{
+              background: 'var(--bg-input)',
+              border: isDropdownOpen ? '1px solid var(--accent-emerald)' : '1px solid var(--border-subtle)',
+              color: 'var(--text-primary)',
+              fontWeight: 700,
+              fontSize: '0.82rem',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              padding: '5px 12px',
+              borderRadius: 'var(--radius-sm)',
+              transition: 'all 0.2s ease',
+              boxShadow: isDropdownOpen ? '0 0 14px rgba(16, 185, 129, 0.2)' : 'none'
+            }}
+          >
+            <Calendar size={14} color="var(--accent-emerald)" />
+            <span className="desktop-only">{formattedMonth}</span>
+            <span className="mobile-only">{dateObj.toLocaleString('default', { month: 'short', year: '2-digit' })}</span>
+            {isCurrentMonth && (
+              <span style={{ fontSize: '0.68rem', background: 'rgba(16, 185, 129, 0.15)', color: 'var(--accent-emerald)', padding: '1px 6px', borderRadius: '4px' }}>
+                Current
+              </span>
             )}
-          </div>
+            <ChevronDown 
+              size={14} 
+              style={{ 
+                color: 'var(--text-muted)', 
+                transform: isDropdownOpen ? 'rotate(180deg)' : 'none',
+                transition: 'transform 0.2s ease'
+              }} 
+            />
+          </button>
+
+          {/* Next Chevron */}
+          <button
+            onClick={goToNextMonth}
+            title="Next Month (Future Planning)"
+            style={{
+              background: 'var(--bg-input)',
+              border: '1px solid var(--border-subtle)',
+              color: 'var(--text-primary)',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: '28px',
+              height: '28px',
+              borderRadius: 'var(--radius-sm)',
+              transition: 'all 0.2s ease'
+            }}
+          >
+            <ChevronRight size={16} />
+          </button>
+
+          {/* Custom Glassmorphic Dropdown Menu */}
+          {isDropdownOpen && (
+            <div 
+              style={{
+                position: 'absolute',
+                top: '100%',
+                left: '50%',
+                transform: 'translateX(-50%)',
+                marginTop: '8px',
+                width: '280px',
+                maxWidth: 'calc(100vw - 28px)',
+                background: 'var(--bg-surface-elevated)',
+                border: '1px solid var(--border-highlight)',
+                borderRadius: 'var(--radius-md)',
+                boxShadow: '0 15px 35px rgba(0, 0, 0, 0.7), 0 0 0 1px var(--border-subtle)',
+                padding: '8px',
+                zIndex: 200,
+                backdropFilter: 'blur(20px)',
+                maxHeight: '340px',
+                overflowY: 'auto'
+              }}
+            >
+              <div style={{ padding: '6px 10px', fontSize: '0.72rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 800, letterSpacing: '0.05em', borderBottom: '1px solid var(--border-subtle)', marginBottom: '6px' }}>
+                Select Tracking Month
+              </div>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
+                {availableMonths.map((m) => {
+                  const isSelected = m.value === selectedMonth;
+                  return (
+                    <button
+                      key={m.value}
+                      onClick={() => {
+                        setSelectedMonth(m.value);
+                        setIsDropdownOpen(false);
+                      }}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        padding: '10px 12px',
+                        borderRadius: 'var(--radius-sm)',
+                        border: isSelected ? '1px solid rgba(16, 185, 129, 0.35)' : '1px solid transparent',
+                        background: isSelected ? 'rgba(16, 185, 129, 0.12)' : 'transparent',
+                        color: isSelected ? '#ffffff' : 'var(--text-primary)',
+                        cursor: 'pointer',
+                        transition: 'all 0.15s ease',
+                        textAlign: 'left',
+                        fontFamily: 'inherit'
+                      }}
+                    >
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                        <span style={{ fontSize: '0.86rem', fontWeight: isSelected ? 800 : 600 }}>
+                          {m.label}
+                        </span>
+                        <span style={{ 
+                          fontSize: '0.68rem', 
+                          color: m.isCurrent 
+                            ? 'var(--accent-emerald)' 
+                            : m.isJoined 
+                            ? 'var(--accent-cyan)' 
+                            : 'var(--text-muted)' 
+                        }}>
+                          {m.badge}
+                        </span>
+                      </div>
+
+                      {isSelected ? (
+                        <Check size={16} color="var(--accent-emerald)" />
+                      ) : m.isFuture ? (
+                        <Sparkles size={14} color="var(--accent-purple)" />
+                      ) : null}
+                    </button>
+                  );
+                })}
+              </div>
+
+              <div style={{ borderTop: '1px solid var(--border-subtle)', marginTop: '8px', paddingTop: '8px', paddingLeft: '8px', paddingRight: '8px', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.68rem', color: 'var(--text-muted)' }}>
+                <ShieldCheck size={12} color="var(--accent-emerald)" />
+                <span>Tracking active from join month ({joinMonth})</span>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
       <div className="header-right">
-        {/* Month Status Badge */}
+        {/* === DESKTOP ACTIONS === */}
+        {/* 1. Month Status Badge */}
         {isCurrentMonth ? (
-          <div className="salary-pacing-pill" title="Days remaining in current month">
+          <div className="salary-pacing-pill desktop-only" title="Days remaining in current month">
             <Flame size={14} />
-            <span className="desktop-only">{metrics.daysRemainingInMonth} Days Left</span>
-            <span className="mobile-only">{metrics.daysRemainingInMonth}d left</span>
+            <span>{metrics.daysRemainingInMonth} Days Left</span>
           </div>
         ) : isFutureMonth ? (
           <div 
-            className="salary-pacing-pill" 
+            className="salary-pacing-pill desktop-only" 
             style={{ 
               background: 'rgba(6, 182, 212, 0.12)', 
               borderColor: 'rgba(6, 182, 212, 0.3)', 
@@ -278,8 +290,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSidebar, onScrollToQuickAd
             title="Future planning month"
           >
             <Calendar size={14} />
-            <span className="desktop-only">{formattedMonth}</span>
-            <span className="mobile-only">{monthStr}/{yearStr.slice(2)}</span>
+            <span>{formattedMonth}</span>
           </div>
         ) : (
           <div 
@@ -294,86 +305,231 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSidebar, onScrollToQuickAd
           </div>
         )}
 
-        {/* Authentication status */}
+        {/* 2. Quick Add button (Desktop) */}
+        <button 
+          className="btn btn-primary desktop-only" 
+          onClick={onOpenQuickAdd || onScrollToQuickAdd}
+          style={{ padding: '7px 14px', fontSize: '0.82rem' }}
+          title="Quick add expense or income"
+        >
+          <Plus size={16} />
+          <span>Quick Add</span>
+        </button>
+
+        {/* 3. Theme Toggle Button (Desktop) */}
+        <button 
+          className="btn btn-secondary desktop-only" 
+          onClick={toggleTheme}
+          title={theme === 'dark' ? "Switch to Light Mode" : "Switch to Dark Mode"}
+          aria-label="Toggle light or dark mode"
+          style={{ 
+            width: '36px', 
+            height: '36px', 
+            padding: 0, 
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: 'center',
+            borderRadius: 'var(--radius-sm)',
+            cursor: 'pointer',
+            flexShrink: 0
+          }}
+        >
+          {theme === 'dark' ? (
+            <Sun size={17} color="var(--accent-amber)" />
+          ) : (
+            <Moon size={17} color="var(--accent-cyan)" />
+          )}
+        </button>
+
+        {/* 4. Logout / Sign In button (Desktop) */}
         {!authUser ? (
           <button 
-            className="btn btn-secondary" 
+            className="btn btn-secondary desktop-only" 
             onClick={openAuthModal}
-            style={{ padding: '6px 10px', fontSize: '0.8rem', gap: '5px' }}
+            style={{ padding: '6px 12px', fontSize: '0.8rem', gap: '5px' }}
           >
             <Lock size={13} color="var(--accent-emerald)" />
             <span>Sign In</span>
           </button>
         ) : (
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <div 
-              onClick={onOpenSidebar}
-              title={`Logged in as @${authUser.username || (authUser.email ? authUser.email.split('@')[0] : 'user')} (${authUser.email || ''}) — Tap for menu`}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                padding: '3px 8px 3px 3px',
-                borderRadius: 'var(--radius-full)',
-                background: 'var(--bg-input)',
-                border: '1px solid var(--border-subtle)',
-                cursor: 'pointer'
-              }}
-            >
-              <div 
-                style={{
-                  width: '30px',
-                  height: '30px',
-                  borderRadius: '50%',
-                  background: 'linear-gradient(135deg, var(--accent-emerald), var(--accent-cyan))',
-                  color: '#000',
-                  fontWeight: 800,
-                  fontSize: '0.8rem',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  flexShrink: 0
-                }}
-              >
-                {(authUser.username || authUser.email || 'U').charAt(0).toUpperCase()}
-              </div>
-              <span className="desktop-only" style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-primary)' }}>
-                @{authUser.username || (authUser.email ? authUser.email.split('@')[0] : 'user')}
-              </span>
-            </div>
-
-            <button 
-              className="btn btn-secondary desktop-only" 
-              onClick={signOut}
-              title="Logout of your account"
-              style={{ 
-                padding: '6px 12px', 
-                fontSize: '0.78rem', 
-                fontWeight: 700,
-                color: 'var(--accent-rose)', 
-                borderColor: 'rgba(244, 63, 94, 0.3)',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '5px',
-                cursor: 'pointer'
-              }}
-            >
-              <LogOut size={13} />
-              <span>Logout</span>
-            </button>
-          </div>
-        )}
-
-        {activeTab === 'dashboard' && (
           <button 
-            className="btn btn-primary desktop-only" 
-            onClick={onOpenQuickAdd || onScrollToQuickAdd}
-            style={{ padding: '8px 14px', fontSize: '0.82rem' }}
+            className="btn btn-secondary desktop-only" 
+            onClick={signOut}
+            title="Logout of your account"
+            style={{ 
+              padding: '6px 12px', 
+              fontSize: '0.78rem', 
+              fontWeight: 700,
+              color: 'var(--accent-rose)', 
+              borderColor: 'rgba(244, 63, 94, 0.3)',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '5px',
+              cursor: 'pointer'
+            }}
           >
-            <Plus size={16} />
-            <span>Quick Add</span>
+            <LogOut size={13} />
+            <span>Logout</span>
           </button>
         )}
+
+        {/* === MOBILE THREE-DOT DROPDOWN MENU === */}
+        <div className="mobile-only" style={{ position: 'relative' }} ref={mobileMenuRef}>
+          <button
+            className="menu-toggle-btn"
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            title="More Options"
+            aria-label="Open mobile action menu"
+            style={{
+              width: '36px',
+              height: '36px',
+              border: isMobileMenuOpen ? '1px solid var(--accent-emerald)' : '1px solid var(--border-subtle)',
+              boxShadow: isMobileMenuOpen ? '0 0 12px rgba(16, 185, 129, 0.25)' : 'none'
+            }}
+          >
+            <MoreVertical size={18} />
+          </button>
+
+          {isMobileMenuOpen && (
+            <div
+              style={{
+                position: 'absolute',
+                top: 'calc(100% + 8px)',
+                right: 0,
+                width: '230px',
+                maxWidth: 'calc(100vw - 24px)',
+                background: 'var(--bg-surface-elevated)',
+                border: '1px solid var(--border-highlight)',
+                borderRadius: 'var(--radius-md)',
+                boxShadow: '0 16px 36px rgba(0, 0, 0, 0.65), 0 0 0 1px var(--border-subtle)',
+                padding: '10px',
+                zIndex: 150,
+                backdropFilter: 'blur(20px)',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '8px'
+              }}
+            >
+              {/* 1. Days Remaining in Month */}
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  padding: '8px 10px',
+                  borderRadius: 'var(--radius-sm)',
+                  background: 'rgba(245, 158, 11, 0.12)',
+                  border: '1px solid rgba(245, 158, 11, 0.25)',
+                  color: 'var(--accent-amber)',
+                  fontSize: '0.8rem',
+                  fontWeight: 700
+                }}
+              >
+                <Flame size={15} />
+                <span>{metrics.daysRemainingInMonth} Days Left</span>
+              </div>
+
+              {/* 2. Theme Switcher */}
+              <button
+                type="button"
+                onClick={() => {
+                  toggleTheme();
+                  setIsMobileMenuOpen(false);
+                }}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  padding: '9px 12px',
+                  borderRadius: 'var(--radius-sm)',
+                  background: 'var(--bg-input)',
+                  border: '1px solid var(--border-subtle)',
+                  color: 'var(--text-primary)',
+                  fontSize: '0.82rem',
+                  fontWeight: 600,
+                  cursor: 'pointer'
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  {theme === 'dark' ? (
+                    <Sun size={15} color="var(--accent-amber)" />
+                  ) : (
+                    <Moon size={15} color="var(--accent-cyan)" />
+                  )}
+                  <span>{theme === 'dark' ? 'Light Mode' : 'Dark Mode'}</span>
+                </div>
+                <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>
+                  {theme === 'dark' ? 'Dark' : 'Light'}
+                </span>
+              </button>
+
+              {/* 3. Quick Add Button */}
+              <button
+                type="button"
+                className="btn btn-primary"
+                onClick={() => {
+                  (onOpenQuickAdd || onScrollToQuickAdd)?.();
+                  setIsMobileMenuOpen(false);
+                }}
+                style={{
+                  width: '100%',
+                  padding: '9px 12px',
+                  fontSize: '0.82rem',
+                  justifyContent: 'center',
+                  gap: '6px'
+                }}
+              >
+                <Plus size={16} />
+                <span>Quick Add</span>
+              </button>
+
+              {/* 4. Logout / Sign In Button */}
+              {!authUser ? (
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  onClick={() => {
+                    openAuthModal();
+                    setIsMobileMenuOpen(false);
+                  }}
+                  style={{
+                    width: '100%',
+                    padding: '8px 12px',
+                    fontSize: '0.8rem',
+                    justifyContent: 'center',
+                    gap: '6px',
+                    color: 'var(--accent-emerald)',
+                    borderColor: 'rgba(16, 185, 129, 0.3)'
+                  }}
+                >
+                  <Lock size={13} />
+                  <span>Sign In</span>
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  onClick={() => {
+                    signOut();
+                    setIsMobileMenuOpen(false);
+                  }}
+                  style={{
+                    width: '100%',
+                    padding: '8px 12px',
+                    fontSize: '0.8rem',
+                    justifyContent: 'center',
+                    gap: '6px',
+                    color: 'var(--accent-rose)',
+                    borderColor: 'rgba(244, 63, 94, 0.3)'
+                  }}
+                >
+                  <LogOut size={13} />
+                  <span>Logout</span>
+                </button>
+              )}
+            </div>
+          )}
+        </div>
       </div>
     </header>
   );

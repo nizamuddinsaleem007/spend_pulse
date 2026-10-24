@@ -302,6 +302,14 @@ body {
   display: flex;
   align-items: center;
   gap: 16px;
+  flex: 1;
+}
+
+.header-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
 }
 
 .menu-toggle-btn {
@@ -340,7 +348,9 @@ body {
 .header-right {
   display: flex;
   align-items: center;
+  justify-content: flex-end;
   gap: 12px;
+  flex: 1;
 }
 
 /* Content Container */
@@ -665,14 +675,22 @@ body {
 
   .header-left {
     gap: 8px;
+    flex: 0 0 auto;
     min-width: 0;
+  }
+
+  .header-center {
     flex: 1;
-    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 0;
   }
 
   .header-right {
     gap: 8px;
-    flex-shrink: 0;
+    flex: 0 0 auto;
+    justify-content: flex-end;
   }
 
   .content-container {

@@ -1,14 +1,14 @@
 import React from 'react';
-import { 
-  LayoutDashboard, 
-  Receipt, 
-  Wallet, 
-  Tag, 
-  PieChart, 
-  Settings, 
-  Sun, 
-  Moon, 
-  X, 
+import {
+  LayoutDashboard,
+  Receipt,
+  Wallet,
+  Tag,
+  PieChart,
+  Settings,
+  Sun,
+  Moon,
+  X,
   TrendingUp,
   ShieldCheck,
   LogIn,
@@ -50,9 +50,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
 
   return (
     <>
-      <div 
-        className={`mobile-overlay ${isOpen ? 'active' : ''}`} 
-        onClick={onClose} 
+      <div
+        className={`mobile-overlay ${isOpen ? 'active' : ''}`}
+        onClick={onClose}
       />
       <aside className={`sidebar ${isOpen ? 'open' : ''}`}>
         <div className="sidebar-header">
@@ -61,10 +61,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
           </div>
           <div className="app-title" style={{ flex: 1 }}>
             <h1>SpendPulse</h1>
-            <span>Smart Budget PWA</span>
+            <span>Smart Budget</span>
           </div>
-          <button 
-            className="sidebar-close-btn" 
+          <button
+            className="sidebar-close-btn"
             onClick={onClose}
             aria-label="Close menu"
             title="Close navigation menu"
@@ -123,21 +123,21 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
                   </div>
                 </div>
               </div>
-              <button 
-                onClick={() => { signOut(); onClose(); }} 
-                title="Logout" 
-                style={{ 
+              <button
+                onClick={() => { signOut(); onClose(); }}
+                title="Logout"
+                style={{
                   display: 'flex',
                   alignItems: 'center',
                   gap: '4px',
-                  background: 'rgba(244, 63, 94, 0.1)', 
-                  border: '1px solid rgba(244, 63, 94, 0.25)', 
-                  color: 'var(--accent-rose)', 
+                  background: 'rgba(244, 63, 94, 0.1)',
+                  border: '1px solid rgba(244, 63, 94, 0.25)',
+                  color: 'var(--accent-rose)',
                   borderRadius: 'var(--radius-sm)',
                   padding: '5px 8px',
                   fontSize: '0.74rem',
                   fontWeight: 700,
-                  cursor: 'pointer' 
+                  cursor: 'pointer'
                 }}
               >
                 <LogOut size={13} />
@@ -145,8 +145,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
               </button>
             </div>
           ) : (
-            <button 
-              className="btn btn-secondary" 
+            <button
+              className="btn btn-secondary"
               onClick={() => { openAuthModal(); onClose(); }}
               style={{ width: '100%', padding: '9px 12px', fontSize: '0.8rem', gap: '6px' }}
             >
@@ -155,29 +155,12 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
             </button>
           )}
 
-          <button 
-            className="btn btn-secondary" 
-            onClick={onClose}
-            style={{ 
-              width: '100%', 
-              padding: '10px 14px', 
-              fontSize: '0.82rem', 
-              fontWeight: 700, 
-              gap: '8px', 
-              justifyContent: 'center',
-              background: 'rgba(255, 255, 255, 0.04)',
-              border: '1px solid var(--border-subtle)',
-              color: 'var(--text-primary)'
-            }}
-          >
-            <X size={15} color="var(--accent-emerald)" />
-            <span>Close Sidebar & View Full Dashboard</span>
-          </button>
+
 
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>Theme</span>
-            <button 
-              className="btn btn-secondary" 
+            <button
+              className="btn btn-secondary"
               onClick={toggleTheme}
               style={{ padding: '6px 12px', fontSize: '0.75rem' }}
             >
@@ -185,7 +168,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
             </button>
           </div>
           <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', textAlign: 'center', paddingTop: '4px' }}>
-            SpendPulse • Cloud Sync Ready
+            SpendPulse
           </div>
         </div>
       </aside>

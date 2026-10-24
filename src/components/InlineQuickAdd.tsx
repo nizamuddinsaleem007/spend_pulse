@@ -10,16 +10,14 @@ interface InlineQuickAddProps {
 }
 
 export const InlineQuickAdd: React.FC<InlineQuickAddProps> = ({ id }) => {
-  const { 
-    categories, 
-    incomeSources, 
-    currency, 
-    addExpense, 
-    addIncome, 
+  const {
+    categories,
+    incomeSources,
+    currency,
+    addExpense,
+    addIncome,
     addCategory,
-    selectedMonth,
-    authUser,
-    openAuthModal
+    selectedMonth
   } = useFinance();
 
   const [activeTab, setActiveTab] = useState<'expense' | 'income'>('expense');
@@ -133,7 +131,7 @@ export const InlineQuickAdd: React.FC<InlineQuickAddProps> = ({ id }) => {
     if (!newCatName.trim()) return;
     const colors = ['#f59e0b', '#10b981', '#06b6d4', '#8b5cf6', '#ec4899', '#3b82f6'];
     const randomColor = colors[Math.floor(Math.random() * colors.length)];
-    
+
     const added = addCategory({
       name: newCatName.trim(),
       type: 'expense',
@@ -150,60 +148,7 @@ export const InlineQuickAdd: React.FC<InlineQuickAddProps> = ({ id }) => {
 
   return (
     <div className="glass-card quick-add-card" id={id}>
-      {/* Auth / Guest Status Banner */}
-      {!authUser ? (
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          gap: '12px',
-          padding: '10px 14px',
-          borderRadius: 'var(--radius-sm)',
-          background: 'rgba(245, 158, 11, 0.08)',
-          border: '1px solid rgba(245, 158, 11, 0.25)',
-          marginBottom: '16px',
-          fontSize: '0.8rem',
-          color: 'var(--accent-amber)'
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <AlertOctagon size={16} />
-            <span><strong>Guest View-Only Mode</strong>: You are viewing demo data. Logging transactions requires email authentication.</span>
-          </div>
-          <button 
-            type="button" 
-            onClick={openAuthModal}
-            style={{
-              padding: '4px 10px',
-              borderRadius: 'var(--radius-sm)',
-              border: 'none',
-              background: 'var(--accent-amber)',
-              color: '#000',
-              fontWeight: 700,
-              fontSize: '0.75rem',
-              cursor: 'pointer',
-              whiteSpace: 'nowrap'
-            }}
-          >
-            Sign In
-          </button>
-        </div>
-      ) : (
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '8px',
-          padding: '8px 12px',
-          borderRadius: 'var(--radius-sm)',
-          background: 'rgba(16, 185, 129, 0.08)',
-          border: '1px solid rgba(16, 185, 129, 0.2)',
-          marginBottom: '16px',
-          fontSize: '0.78rem',
-          color: 'var(--accent-emerald)'
-        }}>
-          <Sparkles size={14} />
-          <span>Private Vault Active for <strong>@{authUser.username || (authUser.email ? authUser.email.split('@')[0] : 'user')}</strong> — multi-device synced with Row-Level Security.</span>
-        </div>
-      )}
+
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
         <div>
           <h3 style={{ fontSize: '1.15rem', fontWeight: 800, letterSpacing: '-0.01em', color: 'var(--text-primary)' }}>
@@ -294,8 +239,8 @@ export const InlineQuickAdd: React.FC<InlineQuickAddProps> = ({ id }) => {
           <div style={{ marginBottom: '16px' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
               <label className="form-label" style={{ marginBottom: 0 }}>Select Category</label>
-              <button 
-                type="button" 
+              <button
+                type="button"
                 style={{ background: 'none', border: 'none', color: 'var(--accent-emerald)', fontSize: '0.75rem', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}
                 onClick={() => setShowNewCatInput(!showNewCatInput)}
               >
@@ -305,17 +250,17 @@ export const InlineQuickAdd: React.FC<InlineQuickAddProps> = ({ id }) => {
 
             {showNewCatInput && (
               <div style={{ display: 'flex', gap: '8px', marginBottom: '12px' }}>
-                <input 
-                  type="text" 
-                  placeholder="Category name..." 
-                  className="form-input" 
+                <input
+                  type="text"
+                  placeholder="Category name..."
+                  className="form-input"
                   style={{ padding: '8px 12px', fontSize: '0.85rem' }}
                   value={newCatName}
                   onChange={(e) => setNewCatName(e.target.value)}
                 />
-                <button 
-                  type="button" 
-                  className="btn btn-primary" 
+                <button
+                  type="button"
+                  className="btn btn-primary"
                   style={{ padding: '8px 14px', fontSize: '0.8rem' }}
                   onClick={handleCreateQuickCategory}
                 >

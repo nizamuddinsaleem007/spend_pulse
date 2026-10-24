@@ -1,37 +1,19 @@
-import React, { useRef, useState } from 'react';
-import { 
-  Download, 
-  Upload, 
-  RotateCcw, 
-  Smartphone, 
-  DollarSign, 
-  Sun, 
-  Moon, 
-  Check, 
-  ShieldCheck,
-  User,
-  LogOut,
-  LogIn
+import React from 'react';
+import {
+  Smartphone,
+  DollarSign,
+  Sun,
+  Moon
 } from 'lucide-react';
 import { useFinance } from '../context/FinanceContext';
 
 export const SettingsView: React.FC = () => {
-  const { 
-    currency, 
-    setCurrency, 
-    theme, 
-    toggleTheme, 
-    exportDataJSON, 
-    importDataJSON, 
-    resetToSampleData,
-    openDeleteModal,
-    authUser,
-    signOut,
-    openAuthModal
+  const {
+    currency,
+    setCurrency,
+    theme,
+    toggleTheme
   } = useFinance();
-
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const [importStatus, setImportStatus] = useState<string | null>(null);
 
   const currencies = [
     { symbol: '₹', name: 'Indian Rupee (INR)' },
@@ -44,38 +26,6 @@ export const SettingsView: React.FC = () => {
     { symbol: 'A$', name: 'Australian Dollar (AUD)' }
   ];
 
-  const handleDownloadBackup = () => {
-    const jsonStr = exportDataJSON();
-    const blob = new Blob([jsonStr], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `SpendPulse_Backup_${new Date().toISOString().split('T')[0]}.json`;
-    link.click();
-    URL.revokeObjectURL(url);
-  };
-
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      const content = event.target?.result as string;
-      if (content) {
-        const success = importDataJSON(content);
-        if (success) {
-          setImportStatus('Backup restored successfully!');
-          setTimeout(() => setImportStatus(null), 3000);
-        } else {
-          alert('Invalid backup file format.');
-        }
-      }
-    };
-    reader.readAsText(file);
-    if (fileInputRef.current) fileInputRef.current.value = '';
-  };
-
   return (
     <div>
       <div style={{ marginBottom: '24px' }}>
@@ -87,85 +37,7 @@ export const SettingsView: React.FC = () => {
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '20px' }}>
         {/* Account & Security Card */}
-        <div className="glass-card" style={{ gridColumn: 'span 2' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '14px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-              <div 
-                style={{
-                  width: '46px',
-                  height: '46px',
-                  borderRadius: '50%',
-                  background: authUser 
-                    ? 'linear-gradient(135deg, var(--accent-emerald), var(--accent-cyan))' 
-                    : 'var(--bg-input)',
-                  color: authUser ? '#000' : 'var(--text-muted)',
-                  fontWeight: 800,
-                  fontSize: '1.15rem',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  border: '1px solid var(--border-subtle)',
-                  flexShrink: 0
-                }}
-              >
-                {authUser ? (authUser.username || authUser.email || 'U').charAt(0).toUpperCase() : <User size={22} />}
-              </div>
-              <div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <h4 style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--text-primary)' }}>
-                    {authUser ? `@${authUser.username || (authUser.email ? authUser.email.split('@')[0] : 'user')}` : 'Guest Visitor'}
-                  </h4>
-                  {authUser ? (
-                    <span style={{ fontSize: '0.7rem', padding: '2px 8px', borderRadius: 'var(--radius-full)', background: 'rgba(16, 185, 129, 0.15)', color: 'var(--accent-emerald)', fontWeight: 700 }}>
-                      Vault Active • RLS Protected
-                    </span>
-                  ) : (
-                    <span style={{ fontSize: '0.7rem', padding: '2px 8px', borderRadius: 'var(--radius-full)', background: 'rgba(245, 158, 11, 0.15)', color: 'var(--accent-amber)', fontWeight: 700 }}>
-                      Read-Only Preview
-                    </span>
-                  )}
-                </div>
-                <p style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', marginTop: '3px' }}>
-                  {authUser 
-                    ? `Account Email: ${authUser.email} — Synchronized securely across all your devices.`
-                    : 'You are browsing demo numbers. Sign in to activate your private cloud vault.'}
-                </p>
-              </div>
-            </div>
 
-            {authUser ? (
-              <button
-                type="button"
-                onClick={signOut}
-                className="btn btn-secondary"
-                style={{ 
-                  color: 'var(--accent-rose)', 
-                  borderColor: 'rgba(244, 63, 94, 0.3)', 
-                  padding: '9px 16px',
-                  fontWeight: 700,
-                  fontSize: '0.86rem',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                  cursor: 'pointer'
-                }}
-              >
-                <LogOut size={16} />
-                <span>Logout of Vault</span>
-              </button>
-            ) : (
-              <button
-                type="button"
-                onClick={openAuthModal}
-                className="btn btn-primary"
-                style={{ padding: '9px 16px', fontSize: '0.86rem', display: 'flex', alignItems: 'center', gap: '6px' }}
-              >
-                <LogIn size={16} />
-                <span>Sign In / Register</span>
-              </button>
-            )}
-          </div>
-        </div>
 
         {/* Currency & Appearance */}
         <div className="glass-card">
@@ -203,56 +75,7 @@ export const SettingsView: React.FC = () => {
           </div>
         </div>
 
-        {/* Backup & Restore */}
-        <div className="glass-card">
-          <h3 className="chart-title" style={{ marginBottom: '16px' }}>
-            <ShieldCheck size={18} color="var(--accent-cyan)" />
-            Data Backup & Privacy
-          </h3>
-          <p style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', marginBottom: '16px' }}>
-            Your financial data is stored 100% locally on your browser/device for ultimate privacy. You can download backups and restore them anytime on any phone or laptop.
-          </p>
 
-          {importStatus && (
-            <div style={{ background: 'rgba(16, 185, 129, 0.2)', border: '1px solid var(--accent-emerald)', padding: '10px', borderRadius: 'var(--radius-md)', color: '#fff', fontSize: '0.82rem', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <Check size={16} color="var(--accent-emerald)" />
-              {importStatus}
-            </div>
-          )}
-
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-            <button className="btn btn-primary" onClick={handleDownloadBackup}>
-              <Download size={16} /> Download JSON Backup
-            </button>
-
-            <button className="btn btn-secondary" onClick={() => fileInputRef.current?.click()}>
-              <Upload size={16} /> Restore from Backup File
-            </button>
-            <input
-              type="file"
-              ref={fileInputRef}
-              style={{ display: 'none' }}
-              accept=".json"
-              onChange={handleFileUpload}
-            />
-
-            <button 
-              className="btn btn-danger" 
-              style={{ marginTop: '12px' }}
-              onClick={() => {
-                openDeleteModal({
-                  title: 'Reset to Demo Data?',
-                  subtitle: 'This will reset all your categories, expenses, and incomes to the initial starter values. Any custom data will be replaced.',
-                  itemDetails: 'Reset Financial Records to Starter Data',
-                  confirmLabel: 'Reset Data',
-                  onConfirm: resetToSampleData
-                });
-              }}
-            >
-              <RotateCcw size={16} /> Reset to Demo Data
-            </button>
-          </div>
-        </div>
 
         {/* Mobile Installation (PWA Guide) */}
         <div className="glass-card" style={{ gridColumn: 'span 2' }}>

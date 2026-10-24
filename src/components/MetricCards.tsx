@@ -1,12 +1,12 @@
 import React from 'react';
-import { 
-  ArrowDownLeft, 
-  ArrowUpRight, 
-  Wallet, 
-  AlertTriangle, 
-  ShieldCheck, 
-  Sparkles, 
-  CreditCard, 
+import {
+  ArrowDownLeft,
+  ArrowUpRight,
+  Wallet,
+  AlertTriangle,
+  ShieldCheck,
+  Sparkles,
+  CreditCard,
   Flame,
   Zap,
   AlertOctagon
@@ -36,14 +36,14 @@ export const MetricCards: React.FC<MetricCardsProps> = ({ onOpenQuickAdd }) => {
         <div className="metric-card-header">
           <div>
             <span className="metric-title" style={{ color: 'var(--accent-emerald-light)' }}>
-              Net Available Balance
+              Available Balance
             </span>
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '3px' }}>
-              <span 
-                style={{ 
-                  fontSize: '0.7rem', 
-                  fontWeight: 800, 
-                  color: status.color, 
+              <span
+                style={{
+                  fontSize: '0.7rem',
+                  fontWeight: 800,
+                  color: status.color,
                   backgroundColor: status.bg,
                   padding: '2px 8px',
                   borderRadius: 'var(--radius-full)',
@@ -78,16 +78,16 @@ export const MetricCards: React.FC<MetricCardsProps> = ({ onOpenQuickAdd }) => {
             <span style={{ fontWeight: 700, color: 'var(--text-primary)' }}>{metrics.burnRatePercentage}% Spent</span>
           </div>
           <div style={{ height: '7px', background: 'rgba(0, 0, 0, 0.25)', borderRadius: '99px', overflow: 'hidden' }}>
-            <div 
-              style={{ 
-                height: '100%', 
-                width: `${Math.min(100, metrics.burnRatePercentage)}%`, 
-                background: metrics.burnRatePercentage >= 80 
-                  ? 'linear-gradient(90deg, var(--accent-amber), var(--accent-rose))' 
+            <div
+              style={{
+                height: '100%',
+                width: `${Math.min(100, metrics.burnRatePercentage)}%`,
+                background: metrics.burnRatePercentage >= 80
+                  ? 'linear-gradient(90deg, var(--accent-amber), var(--accent-rose))'
                   : 'linear-gradient(90deg, var(--accent-emerald), var(--accent-cyan))',
                 borderRadius: '99px',
                 transition: 'width 0.4s ease'
-              }} 
+              }}
             />
           </div>
         </div>
