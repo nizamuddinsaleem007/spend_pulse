@@ -414,6 +414,45 @@ export const FinanceProvider: React.FC<{ children: React.ReactNode }> = ({ child
     }
   };
 
+  // Automatically load cloud data whenever authUser is set or restored
+  useEffect(() => {
+    if (authUser?.id) {
+      loadUserData(authUser.id);
+    }
+  }, [authUser?.id, loadUserData]);
+
+  // Realtime multi-device live sync: Window focus, tab visibility, and Supabase websocket channel
+  useEffect(() => {
+    if (!authUser?.id || !isSupabaseConfigured) return;
+
+    const handleSync = () => {
+      loadUserData(authUser.id);
+    };
+
+    window.addEventListener('focus', handleSync);
+    const onVisibility = () => {
+      if (document.visibilityState === 'visible') handleSync();
+    };
+    document.addEventListener('visibilitychange', onVisibility);
+
+    // Supabase Realtime channel for live instant sync across all connected devices
+    const channel = supabase
+      .channel(`spendpulse-user-${authUser.id}`)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'expenses' }, () => {
+        handleSync();
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'incomes' }, () => {
+        handleSync();
+      })
+      .subscribe();
+
+    return () => {
+      window.removeEventListener('focus', handleSync);
+      document.removeEventListener('visibilitychange', onVisibility);
+      supabase.removeChannel(channel);
+    };
+  }, [authUser?.id, loadUserData]);
+
   const signOut = async () => {
     if (isSupabaseConfigured) {
       await supabase.auth.signOut();

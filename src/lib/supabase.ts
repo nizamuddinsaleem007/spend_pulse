@@ -18,8 +18,11 @@ const sanitizeKey = (raw: string | undefined): string => {
   return raw.trim().replace(/^["']|["']$/g, '');
 };
 
-const rawUrl = import.meta.env.VITE_SUPABASE_URL;
-const rawKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+const DEFAULT_SUPABASE_URL = 'https://vttzapmiftnxajpcwfim.supabase.co';
+const DEFAULT_SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ0dHphcG1pZnRueGFqcGN3ZmltIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI4MjU4NDQsImV4cCI6MjEwODQwMTg0NH0.2gdSOnyVaQluLYb0MAk4p3ixzjVwVYglfZDTGIezTWE';
+
+const rawUrl = import.meta.env.VITE_SUPABASE_URL || DEFAULT_SUPABASE_URL;
+const rawKey = import.meta.env.VITE_SUPABASE_ANON_KEY || DEFAULT_SUPABASE_ANON_KEY;
 
 const supabaseUrl = sanitizeUrl(rawUrl);
 const supabaseAnonKey = sanitizeKey(rawKey);
