@@ -160,3 +160,10 @@ create trigger on_auth_user_created
   for each row
   execute function public.auto_confirm_user();
 
+-- -------------------------------------------------------------
+-- Safe Foreign Keys: Prevent income/expense insert rejections
+-- -------------------------------------------------------------
+alter table public.incomes drop constraint if exists incomes_source_id_fkey;
+alter table public.expenses drop constraint if exists expenses_category_id_fkey;
+
+

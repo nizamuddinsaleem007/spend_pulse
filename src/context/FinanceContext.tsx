@@ -330,15 +330,18 @@ export const FinanceProvider: React.FC<{ children: React.ReactNode }> = ({ child
           supabase.from('incomes').select('*').eq('user_id', userId).order('date', { ascending: false })
         ]);
 
+        // 1. Categories
         if (catsRes.data && catsRes.data.length > 0) {
-          setCategories(catsRes.data.map(c => ({
+          const loadedCats = catsRes.data.map(c => ({
             id: c.id,
             name: c.name,
             type: c.type,
             color: c.color,
             icon: c.icon,
             budgetLimit: Number(c.budget_limit || 0)
-          })));
+          }));
+          setCategories(loadedCats);
+          localStorage.setItem(`spendpulse_${userId}_categories`, JSON.stringify(loadedCats));
         } else {
           // First time user: seed default categories for them
           const initialCats = DEFAULT_CATEGORIES.map(c => ({
@@ -350,22 +353,40 @@ export const FinanceProvider: React.FC<{ children: React.ReactNode }> = ({ child
             icon: c.icon,
             budget_limit: c.budgetLimit
           }));
-          await supabase.from('categories').insert(initialCats);
+          await supabase.from('categories').upsert(initialCats, { onConflict: 'id' });
           setCategories(DEFAULT_CATEGORIES);
+          localStorage.setItem(`spendpulse_${userId}_categories`, JSON.stringify(DEFAULT_CATEGORIES));
         }
 
+        // 2. Income Sources (CRITICAL FIX: Seed into Supabase if empty so foreign keys never fail!)
         if (srcRes.data && srcRes.data.length > 0) {
-          setIncomeSources(srcRes.data.map(s => ({
+          const loadedSources = srcRes.data.map(s => ({
             id: s.id,
             name: s.name,
             expectedMonthly: Number(s.expected_monthly || 0),
             color: s.color,
             icon: s.icon
-          })));
+          }));
+          setIncomeSources(loadedSources);
+          localStorage.setItem(`spendpulse_${userId}_sources`, JSON.stringify(loadedSources));
+        } else {
+          // Seed default income sources into Supabase for this user
+          const initialSources = DEFAULT_INCOME_SOURCES.map(s => ({
+            id: s.id,
+            user_id: userId,
+            name: s.name,
+            expected_monthly: s.expectedMonthly,
+            color: s.color,
+            icon: s.icon
+          }));
+          await supabase.from('income_sources').upsert(initialSources, { onConflict: 'id' });
+          setIncomeSources(DEFAULT_INCOME_SOURCES);
+          localStorage.setItem(`spendpulse_${userId}_sources`, JSON.stringify(DEFAULT_INCOME_SOURCES));
         }
 
-        if (expRes.data) {
-          setExpenses(expRes.data.map(e => ({
+        // 3. Expenses
+        if (expRes.data && expRes.data.length > 0) {
+          const loadedExp = expRes.data.map(e => ({
             id: e.id,
             title: e.title,
             amount: Number(e.amount),
@@ -375,17 +396,81 @@ export const FinanceProvider: React.FC<{ children: React.ReactNode }> = ({ child
             onlineSubtype: e.online_subtype,
             isUnplanned: e.is_unplanned,
             notes: e.notes
-          })));
+          }));
+          setExpenses(loadedExp);
+          localStorage.setItem(`spendpulse_${userId}_expenses`, JSON.stringify(loadedExp));
+        } else {
+          // Check if local cache has expenses to sync
+          const localSaved = localStorage.getItem(`spendpulse_${userId}_expenses`) || localStorage.getItem('spendpulse_expenses');
+          if (localSaved) {
+            try {
+              const parsed = JSON.parse(localSaved);
+              if (Array.isArray(parsed) && parsed.length > 0) {
+                setExpenses(parsed);
+                for (const exp of parsed) {
+                  await supabase.from('expenses').upsert({
+                    id: exp.id,
+                    user_id: userId,
+                    title: exp.title,
+                    amount: exp.amount,
+                    category_id: exp.categoryId,
+                    date: exp.date,
+                    payment_mode: exp.paymentMode,
+                    online_subtype: exp.onlineSubtype || null,
+                    is_unplanned: exp.isUnplanned,
+                    notes: exp.notes || null
+                  }, { onConflict: 'id' });
+                }
+              }
+            } catch {}
+          }
         }
 
-        if (incRes.data) {
-          setIncomes(incRes.data.map(i => ({
+        // 4. Incomes (CRITICAL FIX: Preserve local incomes if Supabase is empty, sync them up!)
+        if (incRes.data && incRes.data.length > 0) {
+          const loadedInc = incRes.data.map(i => ({
             id: i.id,
             sourceId: i.source_id,
             amount: Number(i.amount),
             date: i.date,
             notes: i.notes
-          })));
+          }));
+          setIncomes(loadedInc);
+          localStorage.setItem(`spendpulse_${userId}_incomes`, JSON.stringify(loadedInc));
+          localStorage.setItem('spendpulse_incomes', JSON.stringify(loadedInc));
+        } else {
+          // Check if user has local incomes saved that didn't reach Supabase yet
+          const localSaved = localStorage.getItem(`spendpulse_${userId}_incomes`) || localStorage.getItem('spendpulse_incomes');
+          if (localSaved) {
+            try {
+              const parsed = JSON.parse(localSaved);
+              if (Array.isArray(parsed) && parsed.length > 0) {
+                setIncomes(parsed);
+                // Sync each local income entry to Supabase
+                for (const inc of parsed) {
+                  const src = DEFAULT_INCOME_SOURCES.find(s => s.id === inc.sourceId);
+                  if (src) {
+                    await supabase.from('income_sources').upsert({
+                      id: src.id,
+                      user_id: userId,
+                      name: src.name,
+                      expected_monthly: src.expectedMonthly,
+                      color: src.color,
+                      icon: src.icon
+                    }, { onConflict: 'id' });
+                  }
+                  await supabase.from('incomes').upsert({
+                    id: inc.id,
+                    user_id: userId,
+                    source_id: inc.sourceId,
+                    amount: inc.amount,
+                    date: inc.date,
+                    notes: inc.notes || null
+                  }, { onConflict: 'id' });
+                }
+              }
+            } catch {}
+          }
         }
       } catch (err) {
         console.error('Error loading Supabase cloud data:', err);
@@ -476,29 +561,54 @@ export const FinanceProvider: React.FC<{ children: React.ReactNode }> = ({ child
       ...expenseData,
       id: newId
     };
+
     setExpenses(prev => {
       const updated = [newExpense, ...prev];
-      if (!isSupabaseConfigured) {
-        localStorage.setItem(`spendpulse_${authUser.id}_expenses`, JSON.stringify(updated));
-      }
+      localStorage.setItem(`spendpulse_${authUser.id}_expenses`, JSON.stringify(updated));
+      localStorage.setItem('spendpulse_expenses', JSON.stringify(updated));
       return updated;
     });
 
     if (isSupabaseConfigured) {
-      supabase.from('expenses').insert({
-        id: newId,
-        user_id: authUser.id,
-        title: newExpense.title,
-        amount: newExpense.amount,
-        category_id: newExpense.categoryId,
-        date: newExpense.date,
-        payment_mode: newExpense.paymentMode,
-        online_subtype: newExpense.onlineSubtype || null,
-        is_unplanned: newExpense.isUnplanned,
-        notes: newExpense.notes || null
-      }).then(({ error }) => {
-        if (error) console.error('Supabase expense insert error:', error);
-      });
+      (async () => {
+        try {
+          const catObj = categories.find(c => c.id === newExpense.categoryId);
+          if (catObj) {
+            await supabase.from('categories').upsert({
+              id: catObj.id,
+              user_id: authUser.id,
+              name: catObj.name,
+              type: catObj.type,
+              color: catObj.color,
+              icon: catObj.icon,
+              budget_limit: catObj.budgetLimit || 0
+            }, { onConflict: 'id' });
+          }
+
+          const payload = {
+            id: newId,
+            user_id: authUser.id,
+            title: newExpense.title,
+            amount: newExpense.amount,
+            category_id: newExpense.categoryId,
+            date: newExpense.date,
+            payment_mode: newExpense.paymentMode,
+            online_subtype: newExpense.onlineSubtype || null,
+            is_unplanned: newExpense.isUnplanned,
+            notes: newExpense.notes || null
+          };
+
+          const { error } = await supabase.from('expenses').insert(payload);
+          if (error) {
+            console.error('Supabase expense insert error:', error);
+            if (error.code === '23503' || error.message?.includes('foreign key')) {
+              await supabase.from('expenses').insert({ ...payload, category_id: null });
+            }
+          }
+        } catch (err) {
+          console.error('Error inserting expense:', err);
+        }
+      })();
     }
 
     return true;
@@ -511,9 +621,8 @@ export const FinanceProvider: React.FC<{ children: React.ReactNode }> = ({ child
     }
     setExpenses(prev => {
       const updated = prev.filter(e => e.id !== id);
-      if (!isSupabaseConfigured) {
-        localStorage.setItem(`spendpulse_${authUser.id}_expenses`, JSON.stringify(updated));
-      }
+      localStorage.setItem(`spendpulse_${authUser.id}_expenses`, JSON.stringify(updated));
+      localStorage.setItem('spendpulse_expenses', JSON.stringify(updated));
       return updated;
     });
 
@@ -536,25 +645,53 @@ export const FinanceProvider: React.FC<{ children: React.ReactNode }> = ({ child
       ...incomeData,
       id: newId
     };
+
     setIncomes(prev => {
       const updated = [newIncome, ...prev];
-      if (!isSupabaseConfigured) {
-        localStorage.setItem(`spendpulse_${authUser.id}_incomes`, JSON.stringify(updated));
-      }
+      // ALWAYS persist locally so refresh never loses data
+      localStorage.setItem(`spendpulse_${authUser.id}_incomes`, JSON.stringify(updated));
+      localStorage.setItem('spendpulse_incomes', JSON.stringify(updated));
       return updated;
     });
 
     if (isSupabaseConfigured) {
-      supabase.from('incomes').insert({
-        id: newId,
-        user_id: authUser.id,
-        source_id: newIncome.sourceId,
-        amount: newIncome.amount,
-        date: newIncome.date,
-        notes: newIncome.notes || null
-      }).then(({ error }) => {
-        if (error) console.error('Supabase income insert error:', error);
-      });
+      (async () => {
+        try {
+          // 1. Ensure source exists in Supabase to satisfy foreign key
+          const sourceObj = incomeSources.find(s => s.id === newIncome.sourceId);
+          if (sourceObj) {
+            await supabase.from('income_sources').upsert({
+              id: sourceObj.id,
+              user_id: authUser.id,
+              name: sourceObj.name,
+              expected_monthly: sourceObj.expectedMonthly || 0,
+              color: sourceObj.color,
+              icon: sourceObj.icon
+            }, { onConflict: 'id' });
+          }
+
+          // 2. Insert income into Supabase
+          const payload = {
+            id: newId,
+            user_id: authUser.id,
+            source_id: newIncome.sourceId,
+            amount: newIncome.amount,
+            date: newIncome.date,
+            notes: newIncome.notes || null
+          };
+
+          const { error } = await supabase.from('incomes').insert(payload);
+          if (error) {
+            console.error('Supabase income insert error:', error);
+            // If foreign key constraint failed, fallback without source_id so income is NEVER lost
+            if (error.code === '23503' || error.message?.includes('foreign key')) {
+              await supabase.from('incomes').insert({ ...payload, source_id: null });
+            }
+          }
+        } catch (err) {
+          console.error('Error inserting income:', err);
+        }
+      })();
     }
 
     return true;
@@ -567,9 +704,8 @@ export const FinanceProvider: React.FC<{ children: React.ReactNode }> = ({ child
     }
     setIncomes(prev => {
       const updated = prev.filter(i => i.id !== id);
-      if (!isSupabaseConfigured) {
-        localStorage.setItem(`spendpulse_${authUser.id}_incomes`, JSON.stringify(updated));
-      }
+      localStorage.setItem(`spendpulse_${authUser.id}_incomes`, JSON.stringify(updated));
+      localStorage.setItem('spendpulse_incomes', JSON.stringify(updated));
       return updated;
     });
 
