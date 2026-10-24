@@ -52,4 +52,11 @@ export interface DashboardMetrics {
   burnRatePercentage: number;
 }
 
+export interface AuthUser {
+  id: string;
+  email: string;
+  username: string;
+}
+
 export type ActiveTab = 'dashboard' | 'expenses' | 'incomes' | 'categories' | 'analytics' | 'settings';
+

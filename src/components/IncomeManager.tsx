@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Plus, Wallet, Trash2, TrendingUp } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { useFinance } from '../context/FinanceContext';
+import { CustomDropdown } from './CustomDropdown';
 
 export const IncomeManager: React.FC = () => {
   const { 
@@ -11,7 +12,8 @@ export const IncomeManager: React.FC = () => {
     addIncomeSource, 
     deleteIncomeSource, 
     addIncome, 
-    deleteIncome 
+    deleteIncome,
+    openDeleteModal
   } = useFinance();
 
   // New source modal
@@ -103,7 +105,13 @@ export const IncomeManager: React.FC = () => {
                   className="tx-delete-btn"
                   title="Delete stream"
                   onClick={() => {
-                    if (window.confirm(`Delete income stream "${stream.name}"?`)) deleteIncomeSource(stream.id);
+                    openDeleteModal({
+                      title: `Delete Income Stream?`,
+                      subtitle: `Are you sure you want to delete "${stream.name}"? Historical entries using this stream will remain in your records.`,
+                      itemDetails: stream.name,
+                      confirmLabel: 'Delete Stream',
+                      onConfirm: () => deleteIncomeSource(stream.id)
+                    });
                   }}
                 >
                   <Trash2 size={14} />
@@ -136,16 +144,17 @@ export const IncomeManager: React.FC = () => {
         <form onSubmit={handleLogIncome}>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '14px', marginBottom: '14px' }}>
             <div className="form-group" style={{ marginBottom: 0 }}>
-              <label className="form-label">Select Income Stream</label>
-              <select
-                className="form-select"
+              <CustomDropdown
+                label="Select Income Stream"
                 value={selectedSourceId}
-                onChange={(e) => setSelectedSourceId(e.target.value)}
-              >
-                {incomeSources.map(s => (
-                  <option key={s.id} value={s.id}>{s.name}</option>
-                ))}
-              </select>
+                onChange={setSelectedSourceId}
+                options={incomeSources.map(s => ({
+                  value: s.id,
+                  label: s.name,
+                  color: s.color,
+                  badge: s.expectedMonthly ? `${currency}${s.expectedMonthly.toLocaleString()}/mo` : undefined
+                }))}
+              />
             </div>
 
             <div className="form-group" style={{ marginBottom: 0 }}>
@@ -223,8 +232,15 @@ export const IncomeManager: React.FC = () => {
                     </div>
                     <button
                       className="tx-delete-btn"
+                      title="Delete income inflow"
                       onClick={() => {
-                        if (window.confirm('Delete this income record?')) deleteIncome(inc.id);
+                        openDeleteModal({
+                          title: `Delete Income Inflow?`,
+                          subtitle: `Are you sure you want to delete this recorded inflow? It will be permanently removed.`,
+                          itemDetails: `${src?.name || 'Inflow'} • +${currency}${inc.amount.toLocaleString()} on ${inc.date}`,
+                          confirmLabel: 'Delete Inflow',
+                          onConfirm: () => deleteIncome(inc.id)
+                        });
                       }}
                     >
                       <Trash2 size={16} />

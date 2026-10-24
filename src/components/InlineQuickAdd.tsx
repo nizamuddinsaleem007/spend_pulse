@@ -3,6 +3,7 @@ import { PlusCircle, CreditCard, Banknote, AlertOctagon, Plus, Check, Sparkles }
 import confetti from 'canvas-confetti';
 import { useFinance } from '../context/FinanceContext';
 import type { PaymentMode, OnlineSubtype } from '../types/finance';
+import { CustomDropdown } from './CustomDropdown';
 
 interface InlineQuickAddProps {
   id?: string;
@@ -200,7 +201,7 @@ export const InlineQuickAdd: React.FC<InlineQuickAddProps> = ({ id }) => {
           color: 'var(--accent-emerald)'
         }}>
           <Sparkles size={14} />
-          <span>Private Vault Active for <strong>{authUser.email}</strong> — multi-device synced with Row-Level Security.</span>
+          <span>Private Vault Active for <strong>@{authUser.username || authUser.email.split('@')[0]}</strong> — multi-device synced with Row-Level Security.</span>
         </div>
       )}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
@@ -439,18 +440,17 @@ export const InlineQuickAdd: React.FC<InlineQuickAddProps> = ({ id }) => {
 
             {/* Income Stream */}
             <div className="form-group" style={{ marginBottom: 0 }}>
-              <label className="form-label">Income Source / Stream</label>
-              <select
-                className="form-select"
+              <CustomDropdown
+                label="Income Source / Stream"
                 value={selectedSourceId}
-                onChange={(e) => setSelectedSourceId(e.target.value)}
-              >
-                {incomeSources.map((source) => (
-                  <option key={source.id} value={source.id}>
-                    {source.name}
-                  </option>
-                ))}
-              </select>
+                onChange={setSelectedSourceId}
+                options={incomeSources.map(s => ({
+                  value: s.id,
+                  label: s.name,
+                  color: s.color,
+                  badge: s.expectedMonthly ? `${currency}${s.expectedMonthly.toLocaleString()}/mo` : undefined
+                }))}
+              />
             </div>
           </div>
 

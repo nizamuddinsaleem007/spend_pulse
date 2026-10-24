@@ -301,22 +301,36 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSidebar, onScrollToQuickAd
         ) : (
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <div 
-              title={`Logged in as ${authUser.email}`}
+              title={`Logged in as @${authUser.username || authUser.email.split('@')[0]} (${authUser.email})`}
               style={{
-                width: '32px',
-                height: '32px',
-                borderRadius: '50%',
-                background: 'linear-gradient(135deg, var(--accent-emerald), var(--accent-cyan))',
-                color: '#000',
-                fontWeight: 800,
-                fontSize: '0.85rem',
                 display: 'flex',
                 alignItems: 'center',
-                justifyContent: 'center',
-                cursor: 'pointer'
+                gap: '8px',
+                padding: '4px 10px 4px 4px',
+                borderRadius: 'var(--radius-full)',
+                background: 'var(--bg-input)',
+                border: '1px solid var(--border-subtle)'
               }}
             >
-              {authUser.email.charAt(0).toUpperCase()}
+              <div 
+                style={{
+                  width: '28px',
+                  height: '28px',
+                  borderRadius: '50%',
+                  background: 'linear-gradient(135deg, var(--accent-emerald), var(--accent-cyan))',
+                  color: '#000',
+                  fontWeight: 800,
+                  fontSize: '0.8rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}
+              >
+                {(authUser.username || authUser.email).charAt(0).toUpperCase()}
+              </div>
+              <span style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-primary)' }}>
+                @{authUser.username || authUser.email.split('@')[0]}
+              </span>
             </div>
             <button 
               className="btn btn-secondary" 

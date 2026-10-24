@@ -4,7 +4,7 @@ import { useFinance } from '../context/FinanceContext';
 import type { Category } from '../types/finance';
 
 export const CategoryManager: React.FC = () => {
-  const { categories, expenses, currency, addCategory, updateCategory, deleteCategory } = useFinance();
+  const { categories, expenses, currency, addCategory, updateCategory, deleteCategory, openDeleteModal } = useFinance();
 
   const [showModal, setShowModal] = useState(false);
   const [editingCategoryId, setEditingCategoryId] = useState<string | null>(null);
@@ -122,9 +122,15 @@ export const CategoryManager: React.FC = () => {
                   {categories.length > 1 && (
                     <button 
                       className="tx-delete-btn" 
-                      title="Delete"
+                      title="Delete category"
                       onClick={() => {
-                        if (window.confirm(`Delete category "${cat.name}"?`)) deleteCategory(cat.id);
+                        openDeleteModal({
+                          title: `Delete Category?`,
+                          subtitle: `Are you sure you want to delete "${cat.name}"? Transactions categorized under this will remain in your ledger.`,
+                          itemDetails: `${cat.name} (${cat.type === 'savings' ? 'Savings Bucket' : 'Expense Category'})`,
+                          confirmLabel: 'Delete Category',
+                          onConfirm: () => deleteCategory(cat.id)
+                        });
                       }}
                     >
                       <Trash2 size={14} />

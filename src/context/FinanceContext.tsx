@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, useMemo, useCallback } from 'react';
-import type { Category, IncomeSource, IncomeEntry, Expense, DashboardMetrics, ActiveTab } from '../types/finance';
+import type { Category, IncomeSource, IncomeEntry, Expense, DashboardMetrics, ActiveTab, AuthUser } from '../types/finance';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
+import { DeleteConfirmModal, type DeleteModalData } from '../components/DeleteConfirmModal';
 
 interface FinanceContextType {
   categories: Category[];
@@ -40,16 +41,19 @@ interface FinanceContextType {
   addIncomeSource: (source: Omit<IncomeSource, 'id'>) => boolean;
   updateIncomeSource: (id: string, source: Partial<IncomeSource>) => boolean;
   deleteIncomeSource: (id: string) => boolean;
-  authUser: { id: string; email: string } | null;
+  authUser: AuthUser | null;
   isAuthModalOpen: boolean;
   openAuthModal: () => void;
   closeAuthModal: () => void;
-  setAuthUser: (user: { id: string; email: string } | null) => void;
+  setAuthUser: (user: AuthUser | null) => void;
   signOut: () => void;
+  openDeleteModal: (options: Omit<DeleteModalData, 'isOpen'>) => void;
+  closeDeleteModal: () => void;
   exportDataJSON: () => string;
   importDataJSON: (jsonString: string) => boolean;
   resetToSampleData: () => void;
 }
+
 
 const DEFAULT_CATEGORIES: Category[] = [
   { id: 'cat-savings', name: 'Savings & Investments', type: 'savings', color: '#10b981', icon: 'PiggyBank', budgetLimit: 20000 },
@@ -245,14 +249,47 @@ export const FinanceProvider: React.FC<{ children: React.ReactNode }> = ({ child
   };
 
   // Auth state
-  const [authUser, setAuthUserState] = useState<{ id: string; email: string } | null>(() => {
+  const [authUser, setAuthUserState] = useState<AuthUser | null>(() => {
     const saved = localStorage.getItem('spendpulse_auth_user');
-    return saved ? JSON.parse(saved) : null;
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        return {
+          id: parsed.id,
+          email: parsed.email,
+          username: parsed.username || parsed.email.split('@')[0] || 'User'
+        };
+      } catch {
+        return null;
+      }
+    }
+    return null;
   });
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
   const openAuthModal = () => setIsAuthModalOpen(true);
   const closeAuthModal = () => setIsAuthModalOpen(false);
+
+  // Global Delete Confirm Modal State
+  const [deleteModalData, setDeleteModalData] = useState<DeleteModalData>({
+    isOpen: false,
+    title: '',
+    subtitle: '',
+    itemDetails: '',
+    confirmLabel: 'Delete Record',
+    onConfirm: () => {}
+  });
+
+  const openDeleteModal = (options: Omit<DeleteModalData, 'isOpen'>) => {
+    setDeleteModalData({
+      ...options,
+      isOpen: true
+    });
+  };
+
+  const closeDeleteModal = () => {
+    setDeleteModalData(prev => ({ ...prev, isOpen: false }));
+  };
 
   // Sync Supabase Auth session if configured
   useEffect(() => {
@@ -260,13 +297,15 @@ export const FinanceProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session?.user) {
-        setAuthUserState({ id: session.user.id, email: session.user.email || '' });
+        const username = session.user.user_metadata?.username || session.user.email?.split('@')[0] || 'User';
+        setAuthUserState({ id: session.user.id, email: session.user.email || '', username });
       }
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       if (session?.user) {
-        setAuthUserState({ id: session.user.id, email: session.user.email || '' });
+        const username = session.user.user_metadata?.username || session.user.email?.split('@')[0] || 'User';
+        setAuthUserState({ id: session.user.id, email: session.user.email || '', username });
       } else {
         setAuthUserState(null);
       }
@@ -362,7 +401,7 @@ export const FinanceProvider: React.FC<{ children: React.ReactNode }> = ({ child
     }
   }, []);
 
-  const setAuthUser = (user: { id: string; email: string } | null) => {
+  const setAuthUser = (user: AuthUser | null) => {
     setAuthUserState(user);
     if (user) {
       localStorage.setItem('spendpulse_auth_user', JSON.stringify(user));
@@ -815,12 +854,15 @@ export const FinanceProvider: React.FC<{ children: React.ReactNode }> = ({ child
         closeAuthModal,
         setAuthUser,
         signOut,
+        openDeleteModal,
+        closeDeleteModal,
         exportDataJSON,
         importDataJSON,
         resetToSampleData
       }}
     >
       {children}
+      <DeleteConfirmModal data={deleteModalData} onClose={closeDeleteModal} />
     </FinanceContext.Provider>
   );
 };

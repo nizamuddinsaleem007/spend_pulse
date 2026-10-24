@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Mail, Lock, ShieldCheck, X, Sparkles, CheckCircle2, ArrowRight } from 'lucide-react';
+import { Mail, Lock, User, ShieldCheck, X, Sparkles, CheckCircle2, ArrowRight } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { useFinance } from '../context/FinanceContext';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
@@ -7,8 +7,10 @@ import { supabase, isSupabaseConfigured } from '../lib/supabase';
 export const AuthModal: React.FC = () => {
   const { isAuthModalOpen, closeAuthModal, setAuthUser } = useFinance();
   const [mode, setMode] = useState<'signin' | 'signup'>('signin');
+  const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
@@ -21,17 +23,53 @@ export const AuthModal: React.FC = () => {
     setErrorMessage(null);
     setSuccessMessage(null);
 
+    // Validation for registration
+    if (mode === 'signup') {
+      const cleanUsername = username.trim();
+      if (!cleanUsername) {
+        setErrorMessage('Please enter your username.');
+        setLoading(false);
+        return;
+      }
+      if (password.length < 8) {
+        setErrorMessage('Password must be at least 8 characters long.');
+        setLoading(false);
+        return;
+      }
+      if (password !== confirmPassword) {
+        setErrorMessage('Passwords do not match. Please retype to confirm.');
+        setLoading(false);
+        return;
+      }
+    } else {
+      if (!password) {
+        setErrorMessage('Please enter your password.');
+        setLoading(false);
+        return;
+      }
+    }
+
     try {
       if (isSupabaseConfigured) {
         if (mode === 'signup') {
           const { data, error } = await supabase.auth.signUp({
             email: email.trim(),
-            password: password.trim()
+            password: password.trim(),
+            options: {
+              data: {
+                username: username.trim()
+              }
+            }
           });
           if (error) throw error;
           if (data.user) {
-            setAuthUser({ id: data.user.id, email: data.user.email || email.trim() });
-            setSuccessMessage('Account created! Please check your email inbox to confirm.');
+            const registeredName = username.trim();
+            setAuthUser({
+              id: data.user.id,
+              email: data.user.email || email.trim(),
+              username: registeredName
+            });
+            setSuccessMessage(`Account created! Welcome, @${registeredName}. Check your email to confirm.`);
             confetti({ particleCount: 70, spread: 60, origin: { y: 0.6 } });
             setTimeout(() => closeAuthModal(), 2000);
           }
@@ -42,8 +80,13 @@ export const AuthModal: React.FC = () => {
           });
           if (error) throw error;
           if (data.user) {
-            setAuthUser({ id: data.user.id, email: data.user.email || email.trim() });
-            setSuccessMessage('Successfully signed in! Your private vault is loaded.');
+            const resolvedUsername = data.user.user_metadata?.username || email.trim().split('@')[0];
+            setAuthUser({
+              id: data.user.id,
+              email: data.user.email || email.trim(),
+              username: resolvedUsername
+            });
+            setSuccessMessage(`Successfully signed in! Welcome back, @${resolvedUsername}.`);
             confetti({ particleCount: 70, spread: 60, origin: { y: 0.6 } });
             setTimeout(() => closeAuthModal(), 1500);
           }
@@ -51,13 +94,18 @@ export const AuthModal: React.FC = () => {
       } else {
         // Local simulation if keys not yet configured in .env
         setTimeout(() => {
+          const localUsername = mode === 'signup' 
+            ? username.trim() 
+            : email.trim().split('@')[0];
+
           const mockUser = {
             id: 'usr_' + Date.now(),
-            email: email.trim()
+            email: email.trim(),
+            username: localUsername
           };
           setAuthUser(mockUser);
           confetti({ particleCount: 70, spread: 60, origin: { y: 0.6 } });
-          setSuccessMessage(`Authenticated as ${email.trim()}! (Local session ready)`);
+          setSuccessMessage(`Authenticated as @${localUsername}! Your private vault is ready.`);
           setTimeout(() => closeAuthModal(), 1200);
         }, 600);
       }
@@ -110,7 +158,7 @@ export const AuthModal: React.FC = () => {
             <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '4px' }}>
               {mode === 'signin' 
                 ? 'Sign in to access your personal expenses and sync live across devices.' 
-                : 'Only your email will ever be able to access or view your budget.'}
+                : 'Create your private account. Only you will ever be able to access your data.'}
             </p>
           </div>
           <button className="modal-close-btn" onClick={closeAuthModal}>
@@ -172,6 +220,26 @@ export const AuthModal: React.FC = () => {
         )}
 
         <form onSubmit={handleSubmit}>
+          {/* Username Field (Sign up only) */}
+          {mode === 'signup' && (
+            <div className="form-group">
+              <label className="form-label">Username</label>
+              <div style={{ position: 'relative' }}>
+                <User size={16} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
+                <input
+                  type="text"
+                  placeholder="e.g. nizam"
+                  className="form-input"
+                  style={{ paddingLeft: '38px' }}
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  required
+                />
+              </div>
+            </div>
+          )}
+
+          {/* Email Address */}
           <div className="form-group">
             <label className="form-label">Email Address</label>
             <div style={{ position: 'relative' }}>
@@ -188,22 +256,50 @@ export const AuthModal: React.FC = () => {
             </div>
           </div>
 
+          {/* Password */}
           <div className="form-group">
-            <label className="form-label">Password</label>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <label className="form-label">Password</label>
+              {mode === 'signup' && (
+                <span style={{ fontSize: '0.7rem', color: password.length >= 8 ? 'var(--accent-emerald)' : 'var(--text-muted)', fontWeight: 600 }}>
+                  {password.length >= 8 ? '✓ Min 8 chars' : 'At least 8 chars'}
+                </span>
+              )}
+            </div>
             <div style={{ position: 'relative' }}>
               <Lock size={16} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
               <input
                 type="password"
-                placeholder="••••••••••••"
+                placeholder={mode === 'signup' ? 'Enter password (min 8 characters)' : '••••••••••••'}
                 className="form-input"
                 style={{ paddingLeft: '38px' }}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                minLength={6}
+                minLength={mode === 'signup' ? 8 : 1}
               />
             </div>
           </div>
+
+          {/* Retype Password Confirmation (Sign up only) */}
+          {mode === 'signup' && (
+            <div className="form-group">
+              <label className="form-label">Retype Password</label>
+              <div style={{ position: 'relative' }}>
+                <Lock size={16} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
+                <input
+                  type="password"
+                  placeholder="Re-enter password to confirm"
+                  className="form-input"
+                  style={{ paddingLeft: '38px' }}
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  required
+                  minLength={8}
+                />
+              </div>
+            </div>
+          )}
 
           <button
             type="submit"

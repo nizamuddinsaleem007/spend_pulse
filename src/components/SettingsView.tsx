@@ -20,7 +20,8 @@ export const SettingsView: React.FC = () => {
     toggleTheme, 
     exportDataJSON, 
     importDataJSON, 
-    resetToSampleData 
+    resetToSampleData,
+    openDeleteModal
   } = useFinance();
 
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -152,9 +153,13 @@ export const SettingsView: React.FC = () => {
               className="btn btn-danger" 
               style={{ marginTop: '12px' }}
               onClick={() => {
-                if (window.confirm('Reset all categories, expenses, and incomes to initial demo values?')) {
-                  resetToSampleData();
-                }
+                openDeleteModal({
+                  title: 'Reset to Demo Data?',
+                  subtitle: 'This will reset all your categories, expenses, and incomes to the initial starter values. Any custom data will be replaced.',
+                  itemDetails: 'Reset Financial Records to Starter Data',
+                  confirmLabel: 'Reset Data',
+                  onConfirm: resetToSampleData
+                });
               }}
             >
               <RotateCcw size={16} /> Reset to Demo Data

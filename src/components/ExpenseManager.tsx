@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { Search, Trash2, CreditCard, Banknote, AlertOctagon, Download } from 'lucide-react';
 import { useFinance } from '../context/FinanceContext';
+import { CustomDropdown } from './CustomDropdown';
 
 export const ExpenseManager: React.FC = () => {
-  const { expenses, categories, currency, deleteExpense } = useFinance();
+  const { expenses, categories, currency, deleteExpense, openDeleteModal } = useFinance();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [selectedMode, setSelectedMode] = useState<string>('all');
@@ -76,29 +77,32 @@ export const ExpenseManager: React.FC = () => {
 
           {/* Category Dropdown */}
           <div>
-            <select
-              className="form-select"
+            <CustomDropdown
               value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
-            >
-              <option value="all">All Categories ({categories.length})</option>
-              {categories.map(c => (
-                <option key={c.id} value={c.id}>{c.name}</option>
-              ))}
-            </select>
+              onChange={setSelectedCategory}
+              options={[
+                { value: 'all', label: `All Categories (${categories.length})` },
+                ...categories.map(c => ({
+                  value: c.id,
+                  label: c.name,
+                  color: c.color,
+                  badge: c.type === 'savings' ? 'Savings' : undefined
+                }))
+              ]}
+            />
           </div>
 
           {/* Payment Mode */}
           <div>
-            <select
-              className="form-select"
+            <CustomDropdown
               value={selectedMode}
-              onChange={(e) => setSelectedMode(e.target.value)}
-            >
-              <option value="all">All Payment Modes</option>
-              <option value="Online">Online (UPI / Card / NetBanking)</option>
-              <option value="Cash">Cash Payments</option>
-            </select>
+              onChange={setSelectedMode}
+              options={[
+                { value: 'all', label: 'All Payment Modes' },
+                { value: 'Online', label: 'Online (UPI / Cards / NetBanking)', color: '#06b6d4' },
+                { value: 'Cash', label: 'Cash Payments', color: '#f59e0b' }
+              ]}
+            />
           </div>
         </div>
 
@@ -165,7 +169,13 @@ export const ExpenseManager: React.FC = () => {
                       className="tx-delete-btn"
                       title="Delete expense"
                       onClick={() => {
-                        if (window.confirm(`Delete "${exp.title}"?`)) deleteExpense(exp.id);
+                        openDeleteModal({
+                          title: `Delete Expense?`,
+                          subtitle: `Are you sure you want to delete "${exp.title}"? This record will be permanently deleted.`,
+                          itemDetails: `${exp.title} • -${currency}${exp.amount.toLocaleString()} (${cat?.name || 'General'})`,
+                          confirmLabel: 'Delete Expense',
+                          onConfirm: () => deleteExpense(exp.id)
+                        });
                       }}
                     >
                       <Trash2 size={16} />

@@ -102,10 +102,15 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 10px', background: 'var(--bg-input)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-subtle)' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', overflow: 'hidden' }}>
                 <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: 'linear-gradient(135deg, var(--accent-emerald), var(--accent-cyan))', color: '#000', fontWeight: 800, fontSize: '0.78rem', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                  {authUser.email.charAt(0).toUpperCase()}
+                  {(authUser.username || authUser.email).charAt(0).toUpperCase()}
                 </div>
-                <div style={{ fontSize: '0.74rem', fontWeight: 600, color: 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                  {authUser.email}
+                <div style={{ overflow: 'hidden' }}>
+                  <div style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    @{authUser.username || authUser.email.split('@')[0]}
+                  </div>
+                  <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    {authUser.email}
+                  </div>
                 </div>
               </div>
               <button 

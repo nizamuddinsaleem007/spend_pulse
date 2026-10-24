@@ -3,7 +3,7 @@ import { Trash2, CreditCard, Banknote, AlertOctagon, History, ArrowDownLeft, Arr
 import { useFinance } from '../context/FinanceContext';
 
 export const RecentTransactions: React.FC = () => {
-  const { expenses, incomes, categories, incomeSources, currency, deleteExpense, deleteIncome } = useFinance();
+  const { expenses, incomes, categories, incomeSources, currency, deleteExpense, deleteIncome, openDeleteModal } = useFinance();
   const [filter, setFilter] = useState<'all' | 'expense' | 'income' | 'online' | 'cash' | 'unplanned'>('all');
 
   // Combine expenses and incomes into a unified list
@@ -125,10 +125,16 @@ export const RecentTransactions: React.FC = () => {
                   className="tx-delete-btn"
                   title="Delete record"
                   onClick={() => {
-                    if (window.confirm(`Delete "${tx.title}"?`)) {
-                      if (tx.txType === 'expense') deleteExpense(tx.id);
-                      else deleteIncome(tx.id);
-                    }
+                    openDeleteModal({
+                      title: `Delete ${tx.txType === 'expense' ? 'Expense' : 'Income'}?`,
+                      subtitle: `Are you sure you want to delete "${tx.title}"? This record will be permanently removed.`,
+                      itemDetails: `${tx.title} • ${tx.txType === 'income' ? '+' : '-'}${currency}${tx.amount.toLocaleString()} on ${tx.date}`,
+                      confirmLabel: 'Delete Record',
+                      onConfirm: () => {
+                        if (tx.txType === 'expense') deleteExpense(tx.id);
+                        else deleteIncome(tx.id);
+                      }
+                    });
                   }}
                 >
                   <Trash2 size={16} />
