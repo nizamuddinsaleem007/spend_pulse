@@ -110,7 +110,12 @@ export const AuthModal: React.FC = () => {
         }, 600);
       }
     } catch (err: any) {
-      setErrorMessage(err.message || 'Authentication failed. Please check your credentials.');
+      const msg = err.message || '';
+      if (msg.toLowerCase().includes('email not confirmed')) {
+        setErrorMessage('Your email has not been confirmed yet. Please check your inbox (and spam folder) for the verification link, or confirm your user in the Supabase Dashboard.');
+      } else {
+        setErrorMessage(msg || 'Authentication failed. Please check your credentials.');
+      }
     } finally {
       setLoading(false);
     }
