@@ -676,7 +676,7 @@ body {
   }
 
   .content-container {
-    padding: 14px 12px 100px 12px;
+    padding: 12px 10px calc(80px + env(safe-area-inset-bottom, 0px)) 10px;
     width: 100%;
     max-width: 100%;
     box-sizing: border-box;
@@ -684,13 +684,15 @@ body {
 
   .mobile-bottom-nav {
     display: flex;
-    height: calc(62px + env(safe-area-inset-bottom, 0px));
-    padding-bottom: env(safe-area-inset-bottom, 0px);
+    height: calc(64px + env(safe-area-inset-bottom, 0px));
+    padding-bottom: max(env(safe-area-inset-bottom, 0px), 6px);
     background: rgba(11, 15, 23, 0.94);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     border-top: 1px solid var(--border-subtle);
     box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.5);
+    user-select: none;
+    -webkit-user-select: none;
   }
 
   [data-theme='light'] .mobile-bottom-nav {
@@ -699,12 +701,26 @@ body {
   }
 
   .main-wrapper {
-    padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px));
+    padding-bottom: calc(74px + env(safe-area-inset-bottom, 0px));
   }
 }
 
 /* Smartphone Specific Viewport Scaling (< 600px) */
 @media (max-width: 600px) {
+  /* Prevent iOS Safari 115% Auto-Zoom on Input Focus */
+  input, select, textarea, .form-input, .form-select {
+    font-size: 16px !important;
+  }
+
+  button, .bottom-nav-item, .nav-link, .category-chip, .subtype-pill {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+
+  button:active, .btn:active {
+    transform: scale(0.97);
+  }
+
   .metrics-grid {
     grid-template-columns: 1fr !important;
     gap: 12px;
@@ -712,7 +728,7 @@ body {
   }
 
   .metric-card {
-    padding: 18px 16px;
+    padding: 16px 14px;
     border-radius: var(--radius-md);
   }
 
@@ -721,37 +737,37 @@ body {
   }
 
   .salary-pacing-pill {
-    padding: 5px 10px;
-    font-size: 0.74rem;
+    padding: 4px 8px;
+    font-size: 0.72rem;
     gap: 4px;
   }
 
   .glass-card {
-    padding: 16px 14px;
+    padding: 14px 12px;
     border-radius: var(--radius-md);
   }
 
   .chart-title {
-    font-size: 0.96rem;
+    font-size: 0.92rem;
   }
 
   .quick-add-tabs {
-    margin-bottom: 16px;
+    margin-bottom: 14px;
   }
 
   .quick-tab-btn {
-    padding: 9px 12px;
-    font-size: 0.82rem;
+    padding: 8px 10px;
+    font-size: 0.8rem;
   }
 
   .tx-item {
-    padding: 12px 14px;
+    padding: 11px 12px;
   }
 
   .tx-icon-box {
-    width: 38px;
-    height: 38px;
-    font-size: 1rem;
+    width: 36px;
+    height: 36px;
+    font-size: 0.95rem;
     flex-shrink: 0;
   }
 
@@ -760,15 +776,15 @@ body {
   }
 
   .tx-title {
-    font-size: 0.88rem;
+    font-size: 0.86rem;
   }
 
   .tx-meta {
-    font-size: 0.72rem;
+    font-size: 0.7rem;
   }
 
   .tx-right .tx-amount {
-    font-size: 0.95rem;
+    font-size: 0.92rem;
   }
 }
 

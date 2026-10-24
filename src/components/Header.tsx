@@ -135,7 +135,8 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSidebar, onScrollToQuickAd
               }}
             >
               <Calendar size={14} color="var(--accent-emerald)" />
-              <span>{formattedMonth}</span>
+              <span className="desktop-only">{formattedMonth}</span>
+              <span className="mobile-only">{dateObj.toLocaleString('default', { month: 'short', year: '2-digit' })}</span>
               {isCurrentMonth && (
                 <span style={{ fontSize: '0.68rem', background: 'rgba(16, 185, 129, 0.15)', color: 'var(--accent-emerald)', padding: '1px 6px', borderRadius: '4px' }}>
                   Current
@@ -181,6 +182,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSidebar, onScrollToQuickAd
                   left: 0,
                   marginTop: '8px',
                   width: '280px',
+                  maxWidth: 'calc(100vw - 28px)',
                   background: 'var(--bg-surface-elevated)',
                   border: '1px solid var(--border-highlight)',
                   borderRadius: 'var(--radius-md)',

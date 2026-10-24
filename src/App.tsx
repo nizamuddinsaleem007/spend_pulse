@@ -57,8 +57,10 @@ const AppContent: React.FC = () => {
               {/* 2. Visual Charts Deck */}
               <DashboardCharts />
 
-              {/* 3. Inline Quick-Add Dock (Scroll down on dashboard) */}
-              <InlineQuickAdd id="quick-add-dock" />
+              {/* 3. Inline Quick-Add Dock (Desktop view - on mobile users use floating bottom action button & hero buttons) */}
+              <div className="desktop-only">
+                <InlineQuickAdd id="quick-add-dock" />
+              </div>
 
               {/* 4. Filterable Recent Transactions */}
               <RecentTransactions />

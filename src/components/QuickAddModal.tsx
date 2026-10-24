@@ -324,6 +324,53 @@ export const QuickAddModal: React.FC<QuickAddModalProps> = ({
                   required
                 />
               </div>
+
+              {/* Quick 1-Tap Amount Chips for Mobile Fast Entry */}
+              <div style={{ display: 'flex', gap: '6px', overflowX: 'auto', marginTop: '8px', scrollbarWidth: 'none', WebkitOverflowScrolling: 'touch' }}>
+                {[50, 100, 200, 500, 1000, 2000].map(val => (
+                  <button
+                    key={val}
+                    type="button"
+                    onClick={() => {
+                      const cur = parseFloat(expenseAmount) || 0;
+                      setExpenseAmount((cur + val).toString());
+                    }}
+                    style={{
+                      background: 'rgba(244, 63, 94, 0.1)',
+                      border: '1px solid rgba(244, 63, 94, 0.25)',
+                      color: 'var(--accent-rose)',
+                      fontSize: '0.74rem',
+                      fontWeight: 700,
+                      padding: '4px 10px',
+                      borderRadius: 'var(--radius-full)',
+                      cursor: 'pointer',
+                      whiteSpace: 'nowrap',
+                      flexShrink: 0
+                    }}
+                  >
+                    +{currency}{val}
+                  </button>
+                ))}
+                {expenseAmount && (
+                  <button
+                    type="button"
+                    onClick={() => setExpenseAmount('')}
+                    style={{
+                      background: 'rgba(255, 255, 255, 0.05)',
+                      border: '1px solid rgba(255, 255, 255, 0.1)',
+                      color: 'var(--text-muted)',
+                      fontSize: '0.72rem',
+                      padding: '4px 8px',
+                      borderRadius: 'var(--radius-full)',
+                      cursor: 'pointer',
+                      whiteSpace: 'nowrap',
+                      flexShrink: 0
+                    }}
+                  >
+                    Clear
+                  </button>
+                )}
+              </div>
             </div>
 
             {/* Title / Merchant Name */}
@@ -532,11 +579,12 @@ export const QuickAddModal: React.FC<QuickAddModalProps> = ({
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                gap: '8px'
+                gap: '8px',
+                cursor: 'pointer'
               }}
             >
               <Check size={18} />
-              Save Expense Entry
+              <span>Add Expense • {currency}{parseFloat(expenseAmount || '0').toLocaleString()}</span>
             </button>
           </form>
         )}
@@ -576,6 +624,53 @@ export const QuickAddModal: React.FC<QuickAddModalProps> = ({
                   autoFocus
                   required
                 />
+              </div>
+
+              {/* Quick 1-Tap Income Presets */}
+              <div style={{ display: 'flex', gap: '6px', overflowX: 'auto', marginTop: '8px', scrollbarWidth: 'none', WebkitOverflowScrolling: 'touch' }}>
+                {[1000, 5000, 10000, 25000, 50000].map(val => (
+                  <button
+                    key={val}
+                    type="button"
+                    onClick={() => {
+                      const cur = parseFloat(incomeAmount) || 0;
+                      setIncomeAmount((cur + val).toString());
+                    }}
+                    style={{
+                      background: 'rgba(16, 185, 129, 0.1)',
+                      border: '1px solid rgba(16, 185, 129, 0.25)',
+                      color: 'var(--accent-emerald)',
+                      fontSize: '0.74rem',
+                      fontWeight: 700,
+                      padding: '4px 10px',
+                      borderRadius: 'var(--radius-full)',
+                      cursor: 'pointer',
+                      whiteSpace: 'nowrap',
+                      flexShrink: 0
+                    }}
+                  >
+                    +{currency}{val.toLocaleString()}
+                  </button>
+                ))}
+                {incomeAmount && (
+                  <button
+                    type="button"
+                    onClick={() => setIncomeAmount('')}
+                    style={{
+                      background: 'rgba(255, 255, 255, 0.05)',
+                      border: '1px solid rgba(255, 255, 255, 0.1)',
+                      color: 'var(--text-muted)',
+                      fontSize: '0.72rem',
+                      padding: '4px 8px',
+                      borderRadius: 'var(--radius-full)',
+                      cursor: 'pointer',
+                      whiteSpace: 'nowrap',
+                      flexShrink: 0
+                    }}
+                  >
+                    Clear
+                  </button>
+                )}
               </div>
             </div>
 
@@ -624,11 +719,12 @@ export const QuickAddModal: React.FC<QuickAddModalProps> = ({
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                gap: '8px'
+                gap: '8px',
+                cursor: 'pointer'
               }}
             >
               <Check size={18} />
-              Save Income Deposit
+              <span>Log Inflow • {currency}{parseFloat(incomeAmount || '0').toLocaleString()}</span>
             </button>
           </form>
         )}

@@ -29,11 +29,9 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({ onQuickAddClic
       {/* Floating center (+) button */}
       <button
         className="bottom-nav-item quick-add-trigger"
-        onClick={() => {
-          setActiveTab('dashboard');
-          onQuickAddClick();
-        }}
+        onClick={onQuickAddClick}
         aria-label="Quick Add Entry"
+        title="Quick Add Transaction"
       >
         <Plus size={24} strokeWidth={2.8} />
       </button>
