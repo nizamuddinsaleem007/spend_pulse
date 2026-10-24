@@ -640,3 +640,32 @@
   margin-bottom: 14px;
   opacity: 0.7;
 }
+
+/* Mobile Component Responsive Polish */
+@media (max-width: 600px) {
+  .quick-add-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .payment-toggle-group {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .leakage-toggle-wrap {
+    padding: 12px 14px;
+  }
+
+  .leakage-label {
+    font-size: 0.82rem;
+  }
+
+  .leakage-desc {
+    font-size: 0.7rem;
+  }
+
+  .category-chip {
+    padding: 7px 13px;
+    font-size: 0.78rem;
+  }
+}
+

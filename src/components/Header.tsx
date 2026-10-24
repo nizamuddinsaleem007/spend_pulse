@@ -261,7 +261,8 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSidebar, onScrollToQuickAd
         {isCurrentMonth ? (
           <div className="salary-pacing-pill" title="Days remaining in current month">
             <Flame size={14} />
-            <span>{metrics.daysRemainingInMonth} Days Left</span>
+            <span className="desktop-only">{metrics.daysRemainingInMonth} Days Left</span>
+            <span className="mobile-only">{metrics.daysRemainingInMonth}d left</span>
           </div>
         ) : isFutureMonth ? (
           <div 
@@ -274,18 +275,19 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSidebar, onScrollToQuickAd
             title="Future planning month"
           >
             <Calendar size={14} />
-            <span>{formattedMonth}</span>
+            <span className="desktop-only">{formattedMonth}</span>
+            <span className="mobile-only">{monthStr}/{yearStr.slice(2)}</span>
           </div>
         ) : (
           <div 
-            className="salary-pacing-pill" 
+            className="salary-pacing-pill desktop-only" 
             style={{ 
               background: 'rgba(100, 116, 139, 0.12)', 
               borderColor: 'rgba(100, 116, 139, 0.3)', 
               color: 'var(--text-muted)' 
             }}
           >
-            <span>Archived Month</span>
+            <span>Archived</span>
           </div>
         )}
 
@@ -294,29 +296,31 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSidebar, onScrollToQuickAd
           <button 
             className="btn btn-secondary" 
             onClick={openAuthModal}
-            style={{ padding: '8px 12px', fontSize: '0.82rem', gap: '6px' }}
+            style={{ padding: '6px 10px', fontSize: '0.8rem', gap: '5px' }}
           >
-            <Lock size={14} color="var(--accent-emerald)" />
+            <Lock size={13} color="var(--accent-emerald)" />
             <span>Sign In</span>
           </button>
         ) : (
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
             <div 
-              title={`Logged in as @${authUser.username || (authUser.email ? authUser.email.split('@')[0] : 'user')} (${authUser.email || ''})`}
+              onClick={onOpenSidebar}
+              title={`Logged in as @${authUser.username || (authUser.email ? authUser.email.split('@')[0] : 'user')} (${authUser.email || ''}) — Tap for menu`}
               style={{
                 display: 'flex',
                 alignItems: 'center',
                 gap: '8px',
-                padding: '4px 10px 4px 4px',
+                padding: '3px 8px 3px 3px',
                 borderRadius: 'var(--radius-full)',
                 background: 'var(--bg-input)',
-                border: '1px solid var(--border-subtle)'
+                border: '1px solid var(--border-subtle)',
+                cursor: 'pointer'
               }}
             >
               <div 
                 style={{
-                  width: '28px',
-                  height: '28px',
+                  width: '30px',
+                  height: '30px',
                   borderRadius: '50%',
                   background: 'linear-gradient(135deg, var(--accent-emerald), var(--accent-cyan))',
                   color: '#000',
@@ -324,17 +328,19 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSidebar, onScrollToQuickAd
                   fontSize: '0.8rem',
                   display: 'flex',
                   alignItems: 'center',
-                  justifyContent: 'center'
+                  justifyContent: 'center',
+                  flexShrink: 0
                 }}
               >
                 {(authUser.username || authUser.email || 'U').charAt(0).toUpperCase()}
               </div>
-              <span style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-primary)' }}>
+              <span className="desktop-only" style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-primary)' }}>
                 @{authUser.username || (authUser.email ? authUser.email.split('@')[0] : 'user')}
               </span>
             </div>
+
             <button 
-              className="btn btn-secondary" 
+              className="btn btn-secondary desktop-only" 
               onClick={signOut}
               title="Logout of your account"
               style={{ 
@@ -357,12 +363,12 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSidebar, onScrollToQuickAd
 
         {activeTab === 'dashboard' && (
           <button 
-            className="btn btn-primary" 
+            className="btn btn-primary desktop-only" 
             onClick={onScrollToQuickAdd}
             style={{ padding: '8px 14px', fontSize: '0.82rem' }}
           >
             <Plus size={16} />
-            <span style={{ display: 'inline' }}>Quick Add</span>
+            <span>Quick Add</span>
           </button>
         )}
       </div>

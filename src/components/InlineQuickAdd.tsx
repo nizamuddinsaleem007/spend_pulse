@@ -255,7 +255,7 @@ export const InlineQuickAdd: React.FC<InlineQuickAddProps> = ({ id }) => {
       {/* EXPENSE FORM */}
       {activeTab === 'expense' && (
         <form onSubmit={handleExpenseSubmit}>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '14px', marginBottom: '16px' }}>
+          <div className="quick-add-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '14px', marginBottom: '16px' }}>
             {/* Amount */}
             <div className="form-group" style={{ marginBottom: 0 }}>
               <label className="form-label">Expense Amount ({currency})</label>
@@ -417,7 +417,7 @@ export const InlineQuickAdd: React.FC<InlineQuickAddProps> = ({ id }) => {
       {/* INCOME FORM */}
       {activeTab === 'income' && (
         <form onSubmit={handleIncomeSubmit}>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '14px', marginBottom: '16px' }}>
+          <div className="quick-add-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '14px', marginBottom: '16px' }}>
             {/* Amount */}
             <div className="form-group" style={{ marginBottom: 0 }}>
               <label className="form-label">Income Inflow ({currency})</label>
